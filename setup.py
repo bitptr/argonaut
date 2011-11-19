@@ -10,8 +10,7 @@ setup(
     license='LICENSE',
     description='A spatial file manager',
     long_description=open('README.md').read(),
-    # this apparently doesn't work?
-    #install_requires=[
-    #    "pygobject >= 2.12.3",
-    #],
+    requires=[
+        "pygobject (>= 2.12.3)",
+    ],
 )
