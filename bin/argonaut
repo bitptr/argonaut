@@ -2,14 +2,33 @@
 
 if __name__ == "__main__":
 
-  from gi.repository import Gtk
+  from gi.repository import Gtk, Gio
+  import os
 
   builder = Gtk.Builder()
   builder.add_from_file("argonaut.ui")
-  
-  win = builder.get_object("directory-window")
-  win.connect("delete-event", Gtk.main_quit)
-  builder.get_object("close-menu-item").connect("activate", Gtk.main_quit)
-  
-  win.show_all()
+
+  directory_window = builder.get_object("directory-window")
+  close_menu_item = builder.get_object("close-menu-item")
+  file_icons = builder.get_object("file-icons")
+
+  directory_window.connect("delete-event", Gtk.main_quit)
+  close_menu_item.connect("activate", Gtk.main_quit)
+
+  directory_store = Gtk.ListStore(str)
+
+  pwd = os.getcwd()
+  directory = Gio.file_new_for_commandline_arg(pwd)
+  child_enumerator = directory.enumerate_children("standard::*", Gio.FileQueryInfoFlags.NONE, None)
+  while True:
+    file_info = child_enumerator.next_file(None)
+    if file_info == None:
+      break
+    directory_store.append([file_info.get_name()])
+  child_enumerator.close(None)
+
+  file_icons.set_model(directory_store)
+  file_icons.set_text_column(0)
+
+  directory_window.show_all()
   Gtk.main()
