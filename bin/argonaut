@@ -9,6 +9,32 @@ class UI:
     self.close_menu_item = builder.get_object("close-menu-item")
     self.file_icons = builder.get_object("file-icons")
 
+  def setup_signals(self):
+    self.directory_window.connect("delete-event", Gtk.main_quit)
+    self.close_menu_item.connect("activate", Gtk.main_quit)
+
+  def setup_file_icons(self, directory_store):
+    self.file_icons.set_model(directory_store)
+    self.file_icons.set_text_column(0)
+
+class DirectoryFiller:
+  def __init__(self, directory_path):
+    self.directory_path = directory_path
+
+  def get_store(self):
+    directory_store = Gtk.ListStore(str)
+
+    directory = Gio.file_new_for_commandline_arg(self.directory_path)
+    child_enumerator = directory.enumerate_children("standard::*", Gio.FileQueryInfoFlags.NONE, None)
+    while True:
+      file_info = child_enumerator.next_file(None)
+      if file_info == None:
+        break
+      directory_store.append([file_info.get_name()])
+    child_enumerator.close(None)
+
+    return directory_store
+
 if __name__ == "__main__":
 
   from gi.repository import Gtk, Gio
@@ -16,23 +42,10 @@ if __name__ == "__main__":
 
   ui = UI()
 
-  ui.directory_window.connect("delete-event", Gtk.main_quit)
-  ui.close_menu_item.connect("activate", Gtk.main_quit)
+  directory_filler = DirectoryFiller(os.getcwd())
 
-  directory_store = Gtk.ListStore(str)
-
-  pwd = os.getcwd()
-  directory = Gio.file_new_for_commandline_arg(pwd)
-  child_enumerator = directory.enumerate_children("standard::*", Gio.FileQueryInfoFlags.NONE, None)
-  while True:
-    file_info = child_enumerator.next_file(None)
-    if file_info == None:
-      break
-    directory_store.append([file_info.get_name()])
-  child_enumerator.close(None)
-
-  ui.file_icons.set_model(directory_store)
-  ui.file_icons.set_text_column(0)
+  ui.setup_file_icons(directory_filler.get_store())
+  ui.setup_signals()
 
   ui.directory_window.show_all()
   Gtk.main()
