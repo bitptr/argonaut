@@ -83,7 +83,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="close-menu-item">
+                      <object class="GtkImageMenuItem" id="directory-close-menu-item">
                         <property name="label">gtk-close</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -126,7 +126,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem2">
+                      <object class="GtkImageMenuItem" id="file-open-menu-item">
                         <property name="label">gtk-open</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -137,7 +137,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem10">
+                      <object class="GtkMenuItem" id="file-uncompress-menu-item">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -146,7 +146,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem6">
+                      <object class="GtkMenuItem" id="file-rename-menu-item">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -155,7 +155,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem7">
+                      <object class="GtkImageMenuItem" id="file-copy-menu-item">
                         <property name="label">gtk-copy</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -165,7 +165,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem3">
+                      <object class="GtkMenuItem" id="file-link-menu-item">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -174,7 +174,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="menuitem5">
+                      <object class="GtkImageMenuItem" id="file-properties-menu-item">
                         <property name="label">gtk-properties</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -184,7 +184,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem9">
+                      <object class="GtkImageMenuItem" id="file-delete-menu-item">
                         <property name="label">gtk-delete</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -209,7 +209,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem6">
+                      <object class="GtkImageMenuItem" id="edit-cut-menu-item">
                         <property name="label">gtk-cut</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -270,6 +270,7 @@
             <property name="height_request">300</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="selection_mode">multiple</property>
           </object>
           <packing>
             <property name="expand">False</property>
