@@ -1,0 +1,15 @@
+#!/usr/bin/python
+
+if __name__ == "__main__":
+
+  from gi.repository import Gtk
+
+  builder = Gtk.Builder()
+  builder.add_from_file("argonaut.ui")
+  
+  win = builder.get_object("directory-window")
+  win.connect("delete-event", Gtk.main_quit)
+  builder.get_object("close-menu-item").connect("activate", Gtk.main_quit)
+  
+  win.show_all()
+  Gtk.main()
