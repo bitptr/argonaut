@@ -5,9 +5,10 @@ if __name__ == "__main__":
   from gi.repository import Gtk, Gio
   from argonautics.ui import UI
   from argonautics.directory_filler import DirectoryFiller
+  from argonautics.file_manager import FileManager
   import os
 
-  ui = UI()
+  ui = UI(FileManager())
 
   directory_filler = DirectoryFiller(os.getcwd())
 
