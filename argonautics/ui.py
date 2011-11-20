@@ -1,8 +1,7 @@
 from gi.repository import Gtk
 
 class UI:
-  def __init__(self, file_manager):
-    builder = Gtk.Builder()
+  def __init__(self, builder, file_manager):
     builder.add_from_file("argonaut.ui")
 
     self.directory_window = builder.get_object("directory-window")

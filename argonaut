@@ -8,7 +8,9 @@ if __name__ == "__main__":
   from argonautics.file_manager import FileManager
   import os
 
-  ui = UI(FileManager())
+  builder = Gtk.Builder()
+  file_manager = FileManager()
+  ui = UI(builder, file_manager)
 
   directory_filler = DirectoryFiller(os.getcwd())
 
