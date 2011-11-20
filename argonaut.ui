@@ -155,16 +155,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="file-copy-menu-item">
-                        <property name="label">gtk-copy</property>
-                        <property name="use_action_appearance">False</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkMenuItem" id="file-link-menu-item">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
@@ -211,6 +201,16 @@
                     <child>
                       <object class="GtkImageMenuItem" id="edit-cut-menu-item">
                         <property name="label">gtk-cut</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="file-copy-menu-item">
+                        <property name="label">gtk-copy</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
