@@ -1,4 +1,4 @@
-#!/usr/bin/python
+from gi.repository import Gtk
 
 class UI:
   def __init__(self):
@@ -49,37 +49,3 @@ class UI:
         self.file_delete_menu_item,
         self.edit_cut_menu_item]
     [item.set_sensitive(sensitive) for item in file_sensitive_menu_items]
-
-class DirectoryFiller:
-  def __init__(self, directory_path):
-    self.directory_path = directory_path
-
-  def get_store(self):
-    directory_store = Gtk.ListStore(str)
-
-    directory = Gio.file_new_for_commandline_arg(self.directory_path)
-    child_enumerator = directory.enumerate_children("standard::*", Gio.FileQueryInfoFlags.NONE, None)
-    while True:
-      file_info = child_enumerator.next_file(None)
-      if file_info == None:
-        break
-      directory_store.append([file_info.get_name()])
-    child_enumerator.close(None)
-
-    return directory_store
-
-if __name__ == "__main__":
-
-  from gi.repository import Gtk, Gio
-  import os
-
-  ui = UI()
-
-  directory_filler = DirectoryFiller(os.getcwd())
-
-  ui.setup_file_icons(directory_filler.get_store())
-  ui.setup_signals()
-  ui.desensitize_file_menu()
-
-  ui.directory_window.show_all()
-  Gtk.main()

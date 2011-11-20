@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+if __name__ == "__main__":
+
+  from gi.repository import Gtk, Gio
+  from argonautics.ui import UI
+  from argonautics.directory_filler import DirectoryFiller
+  import os
+
+  ui = UI()
+
+  directory_filler = DirectoryFiller(os.getcwd())
+
+  ui.setup_file_icons(directory_filler.get_store())
+  ui.setup_signals()
+  ui.desensitize_file_menu()
+
+  ui.directory_window.show_all()
+  Gtk.main()
