@@ -4,16 +4,15 @@ from argonautics.test.support.mock_file_manager import *
 import unittest
 
 class TestUI(unittest.TestCase):
+  def setUp(self):
+    self._mock_builder = MockBuilder(self)
+    self._mock_file_manager = MockFileManager()
+    self._ui = UI(self._mock_builder, self._mock_file_manager)
+
   def testBuilderUsesTheAppropriateFile(self):
-    mock_builder = MockBuilder(self)
-    mock_file_manager = MockFileManager()
-    ui = UI(mock_builder, mock_file_manager)
-    self.assertDidAddFromFile(mock_builder, "argonaut.ui")
+    self._mock_builder.assertDidAddFromFile("argonaut.ui")
 
   def testDataAttributesPulledFromBuilder(self):
-    mock_builder = MockBuilder(self)
-    mock_file_manager = MockFileManager()
-    ui = UI(mock_builder, mock_file_manager)
     widgets = ["directory-window",
         "file-icons",
         "directory-close-menu-item",
@@ -37,19 +36,14 @@ class TestUI(unittest.TestCase):
         "file_delete_menu_item",
         "edit_cut_menu_item"]
 
-    self.assertSubList(widget_accessors, dir(ui))
+    self.assertDataAccessors(widget_accessors, self._ui)
     for widget in widgets:
-      mock_builder.assertDidGetObject(widget)
+      self._mock_builder.assertDidGetObject(widget)
 
-
-  def assertDidAddFromFile(self, builder, filename):
-    self.assertTrue(builder.did_add_from_file(filename),
-        "did not add the UI file to the builder")
-
-  def assertSubList(self, smaller, larger):
-    for element in smaller:
-      self.assertTrue(element in larger,
-          "failed to find %s in %s" % (element, larger))
+  def assertDataAccessors(self, accessors, obj):
+    for accessor in accessors:
+      self.assertTrue(accessor in dir(obj),
+          "no accessor for %s exists in %s" % (accessor, obj))
 
 if __name__ == "__main__":
   unittest.main()

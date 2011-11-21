@@ -23,3 +23,8 @@ class MockBuilder:
     self._test_case.assertTrue(
         self.did_get_object(widget_name),
         "did not get the widget %s" % widget_name)
+
+  def assertDidAddFromFile(self, filename):
+    self._test_case.assertTrue(
+        self.did_add_from_file(filename),
+        "did not add the UI file to the builder")
