@@ -34,19 +34,8 @@ class TestUI(unittest.TestCase):
         "file-properties-menu-item",
         "file-delete-menu-item",
         "edit-cut-menu-item"]
-    widget_accessors = [ "directory_window",
-        "file_icons",
-        "directory_close_menu_item",
-        "file_open_menu_item",
-        "file_uncompress_menu_item",
-        "file_rename_menu_item",
-        "file_copy_menu_item",
-        "file_link_menu_item",
-        "file_properties_menu_item",
-        "file_delete_menu_item",
-        "edit_cut_menu_item"]
 
-    self.assertDataAccessors(widget_accessors, self._ui)
+    self.assertDataAccessor("directory_window", self._ui)
     for widget in widgets:
       self._mock_builder.assertDidGetObject(widget)
 
@@ -55,11 +44,11 @@ class TestUI(unittest.TestCase):
 
     self._ui.directory_window.assertSignalConnected("delete-event",
         Gtk.main_quit)
-    self._ui.directory_close_menu_item.assertSignalConnected("activate",
+    self._ui._directory_close_menu_item.assertSignalConnected("activate",
         Gtk.main_quit)
-    self._ui.file_icons.assertSignalConnected("selection-changed",
+    self._ui._file_icons.assertSignalConnected("selection-changed",
         self._ui._file_selection.change_sensitivity)
-    self._ui.file_open_menu_item.assertSignalConnected("activate",
+    self._ui._file_open_menu_item.assertSignalConnected("activate",
         self._mock_file_manager.open_files)
 
   def testDesensitizationOfFileMenu(self):
@@ -69,10 +58,9 @@ class TestUI(unittest.TestCase):
     self._mock_file_selection.assertDesensitized()
 
 
-  def assertDataAccessors(self, accessors, obj):
-    for accessor in accessors:
-      self.assertTrue(accessor in dir(obj),
-          "no accessor for %s exists in %s" % (accessor, obj))
+  def assertDataAccessor(self, accessor, obj):
+    self.assertTrue(accessor in dir(obj),
+        "no accessor for %s exists in %s" % (accessor, obj))
 
 if __name__ == "__main__":
   unittest.main()

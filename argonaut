@@ -2,19 +2,24 @@
 
 if __name__ == "__main__":
 
-  from gi.repository import Gtk
+  from gi.repository import Gtk, Gio
   from argonautics.ui import UI
   from argonautics.directory_filler import DirectoryFiller
   from argonautics.file_manager import FileManager
   from argonautics.file_selection import FileSelection
   import os
 
+
+  directory = Gio.file_new_for_commandline_arg(os.getcwd())
+  storage = Gtk.ListStore
+  directory_filler = DirectoryFiller(storage,directory)
+
   builder = Gtk.Builder()
   file_manager = FileManager
   file_selection = FileSelection
+
   ui = UI(builder, file_manager, file_selection)
 
-  directory_filler = DirectoryFiller(os.getcwd())
 
   ui.setup_file_icons(directory_filler.get_store())
   ui.setup_signals()
