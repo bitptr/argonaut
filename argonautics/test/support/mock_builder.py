@@ -11,7 +11,7 @@ class MockBuilder:
 
   def get_object(self, widget_name):
     self.got_object.append(widget_name)
-    return MockWidget(widget_name)
+    return MockWidget(self._test_case, widget_name)
 
   def did_add_from_file(self, filename):
     return self.added_from_file == filename

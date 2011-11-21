@@ -1,7 +1,10 @@
+import unittest
+
 from argonautics.ui import UI
 from argonautics.test.support.mock_builder import *
 from argonautics.test.support.mock_file_manager import *
-import unittest
+
+from gi.repository import Gtk
 
 class TestUI(unittest.TestCase):
   def setUp(self):
@@ -39,6 +42,18 @@ class TestUI(unittest.TestCase):
     self.assertDataAccessors(widget_accessors, self._ui)
     for widget in widgets:
       self._mock_builder.assertDidGetObject(widget)
+
+  def testSetsSignals(self):
+    self._ui.setup_signals()
+
+    self._ui.directory_window.assertSignalConnected("delete-event",
+        Gtk.main_quit)
+    self._ui.directory_close_menu_item.assertSignalConnected("activate",
+        Gtk.main_quit)
+    self._ui.file_icons.assertSignalConnected("selection-changed",
+        self._ui.change_file_menu_sensitivity)
+    self._ui.file_open_menu_item.assertSignalConnected("activate",
+        self._mock_file_manager.open_files(self._ui.file_icons))
 
   def assertDataAccessors(self, accessors, obj):
     for accessor in accessors:
