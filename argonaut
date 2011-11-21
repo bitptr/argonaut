@@ -9,7 +9,7 @@ if __name__ == "__main__":
   import os
 
   builder = Gtk.Builder()
-  file_manager = FileManager()
+  file_manager = FileManager
   ui = UI(builder, file_manager)
 
   directory_filler = DirectoryFiller(os.getcwd())

@@ -9,8 +9,9 @@ from gi.repository import Gtk
 class TestUI(unittest.TestCase):
   def setUp(self):
     self._mock_builder = MockBuilder(self)
-    self._mock_file_manager = MockFileManager()
-    self._ui = UI(self._mock_builder, self._mock_file_manager)
+    mock_file_manager_factory = MockFileManager(self).factory
+    self._ui = UI(self._mock_builder, mock_file_manager_factory)
+    self._mock_file_manager = self._ui._file_manager
 
   def testBuilderUsesTheAppropriateFile(self):
     self._mock_builder.assertDidAddFromFile("argonaut.ui")
@@ -51,9 +52,9 @@ class TestUI(unittest.TestCase):
     self._ui.directory_close_menu_item.assertSignalConnected("activate",
         Gtk.main_quit)
     self._ui.file_icons.assertSignalConnected("selection-changed",
-        self._ui.change_file_menu_sensitivity)
+        self._ui._change_file_menu_sensitivity)
     self._ui.file_open_menu_item.assertSignalConnected("activate",
-        self._mock_file_manager.open_files(self._ui.file_icons))
+        self._mock_file_manager.open_files)
 
   def assertDataAccessors(self, accessors, obj):
     for accessor in accessors:
