@@ -2,7 +2,7 @@
 
 if __name__ == "__main__":
 
-  from gi.repository import Gtk, Gio
+  from gi.repository import Gtk
   from argonautics.ui import UI
   from argonautics.directory_filler import DirectoryFiller
   from argonautics.file_manager import FileManager
