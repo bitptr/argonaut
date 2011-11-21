@@ -6,11 +6,13 @@ if __name__ == "__main__":
   from argonautics.ui import UI
   from argonautics.directory_filler import DirectoryFiller
   from argonautics.file_manager import FileManager
+  from argonautics.file_selection import FileSelection
   import os
 
   builder = Gtk.Builder()
   file_manager = FileManager
-  ui = UI(builder, file_manager)
+  file_selection = FileSelection
+  ui = UI(builder, file_manager, file_selection)
 
   directory_filler = DirectoryFiller(os.getcwd())
 

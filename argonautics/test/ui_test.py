@@ -3,6 +3,7 @@ import unittest
 from argonautics.ui import UI
 from argonautics.test.support.mock_builder import *
 from argonautics.test.support.mock_file_manager import *
+from argonautics.test.support.mock_file_selection import *
 
 from gi.repository import Gtk
 
@@ -10,8 +11,13 @@ class TestUI(unittest.TestCase):
   def setUp(self):
     self._mock_builder = MockBuilder(self)
     mock_file_manager_factory = MockFileManager(self).factory
-    self._ui = UI(self._mock_builder, mock_file_manager_factory)
+    mock_file_selection_factory = MockFileSelection(self).factory
+
+    self._ui = UI(self._mock_builder,
+        mock_file_manager_factory,
+        mock_file_selection_factory)
     self._mock_file_manager = self._ui._file_manager
+    self._mock_file_selection = self._ui._file_selection
 
   def testBuilderUsesTheAppropriateFile(self):
     self._mock_builder.assertDidAddFromFile("argonaut.ui")
@@ -52,9 +58,16 @@ class TestUI(unittest.TestCase):
     self._ui.directory_close_menu_item.assertSignalConnected("activate",
         Gtk.main_quit)
     self._ui.file_icons.assertSignalConnected("selection-changed",
-        self._ui._change_file_menu_sensitivity)
+        self._ui._file_selection.change_sensitivity)
     self._ui.file_open_menu_item.assertSignalConnected("activate",
         self._mock_file_manager.open_files)
+
+  def testDesensitizationOfFileMenu(self):
+    self._mock_file_selection.assertSensitized()
+    self._ui.desensitize_file_menu()
+
+    self._mock_file_selection.assertDesensitized()
+
 
   def assertDataAccessors(self, accessors, obj):
     for accessor in accessors:
