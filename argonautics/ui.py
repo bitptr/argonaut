@@ -16,20 +16,20 @@ class UI:
     self.file_delete_menu_item = builder.get_object("file-delete-menu-item")
     self.edit_cut_menu_item = builder.get_object("edit-cut-menu-item")
 
-    self.file_manager = file_manager
+    self._file_manager = file_manager
 
   def setup_signals(self):
     self.directory_window.connect("delete-event", Gtk.main_quit)
     self.directory_close_menu_item.connect("activate", Gtk.main_quit)
     self.file_icons.connect("selection-changed", self.change_file_menu_sensitivity)
     self.file_open_menu_item.connect("activate",
-        self.file_manager.open_files(self.file_icons))
+        self._file_manager.open_files(self.file_icons))
 
   def change_file_menu_sensitivity(self, icon_view):
-    if len(icon_view.get_selected_items()) == 0:
-      self.desensitize_file_menu()
-    else:
+    if icon_view.get_selected_items():
       self.sensitize_file_menu()
+    else:
+      self.desensitize_file_menu()
 
   def setup_file_icons(self, directory_store):
     self.file_icons.set_model(directory_store)
