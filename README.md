@@ -1,7 +1,7 @@
 Argonaut
 ========
 
-A spatial file manager.
+A spatial directory manager.
 
 Spatial?
 --------
@@ -12,6 +12,12 @@ Things that make it spatial:
   dimensions consistently.
 
   A consequence of this is that directories must open in new windows.
+
+* A window is a directory, and a directory is a window.
+
+  A consequence of this is that each directory can only be open once. When
+  combined with virtual desktops the most straightforward way to think about
+  the desired functionality is: the existing window closes and a new one opens.
 
 Copyright
 ---------
