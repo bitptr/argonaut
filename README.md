@@ -19,6 +19,13 @@ Things that make it spatial:
   combined with virtual desktops the most straightforward way to think about
   the desired functionality is: the existing window closes and a new one opens.
 
+Setup
+-----
+
+Depends on pygobject.
+
+To run the a test you must set PYTHONPATH to the repo's root directory.
+
 Copyright
 ---------
 
