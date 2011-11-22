@@ -1,7 +1,7 @@
 from gi.repository import Gtk
 
 class UI:
-  def __init__(self, builder, file_manager_factory, menu_sensitizer_factory):
+  def __init__(self, builder, file_opener_factory, menu_sensitizer_factory):
     builder.add_from_file("argonaut.ui")
 
     self.directory_window = builder.get_object("directory-window")
@@ -16,7 +16,7 @@ class UI:
     self._file_delete_menu_item = builder.get_object("file-delete-menu-item")
     self._edit_cut_menu_item = builder.get_object("edit-cut-menu-item")
 
-    self._file_manager = file_manager_factory(self._file_icons)
+    self._file_opener = file_opener_factory(self._file_icons)
     self._menu_sensitizer = menu_sensitizer_factory([
         self._file_open_menu_item,
         self._file_uncompress_menu_item,
@@ -33,7 +33,7 @@ class UI:
     self._file_icons.connect("selection-changed",
         self._menu_sensitizer.change_sensitivity)
     self._file_open_menu_item.connect("activate",
-        self._file_manager.open_files)
+        self._file_opener.run)
 
   def setup_file_icons(self, directory_store):
     self._file_icons.set_model(directory_store)

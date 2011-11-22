@@ -1,10 +1,10 @@
 from gi.repository import Gio
 
-class FileManager:
+class FileOpener:
   def __init__(self, icon_view):
     self._icon_view = icon_view
 
-  def open_files(self, file_open_menu_item):
+  def run(self, file_open_menu_item):
     tree_model = self._icon_view.get_model()
     selected_files = self._icon_view.get_selected_items()
     for selected_file in selected_files:

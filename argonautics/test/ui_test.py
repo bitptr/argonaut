@@ -2,7 +2,7 @@ import unittest
 
 from argonautics.ui import UI
 from argonautics.test.support.mock_builder import *
-from argonautics.test.support.mock_file_manager import *
+from argonautics.test.support.mock_file_opener import *
 from argonautics.test.support.mock_menu_sensitizer import *
 
 from gi.repository import Gtk
@@ -10,13 +10,13 @@ from gi.repository import Gtk
 class TestUI(unittest.TestCase):
   def setUp(self):
     self._mock_builder = MockBuilder(self)
-    mock_file_manager_factory = MockFileManager(self).factory
+    mock_file_opener_factory = MockFileOpener(self).factory
     mock_menu_sensitizer_factory = MockMenuSensitizer(self).factory
 
     self._ui = UI(self._mock_builder,
-        mock_file_manager_factory,
+        mock_file_opener_factory,
         mock_menu_sensitizer_factory)
-    self._mock_file_manager = self._ui._file_manager
+    self._mock_file_opener = self._ui._file_opener
     self._mock_menu_sensitizer = self._ui._menu_sensitizer
 
   def testBuilderUsesTheAppropriateFile(self):
@@ -49,7 +49,7 @@ class TestUI(unittest.TestCase):
     self._ui._file_icons.assertSignalConnected("selection-changed",
         self._ui._menu_sensitizer.change_sensitivity)
     self._ui._file_open_menu_item.assertSignalConnected("activate",
-        self._mock_file_manager.open_files)
+        self._mock_file_opener.run)
 
   def testDesensitizationOfFileMenu(self):
     self._mock_menu_sensitizer.assertSensitized()

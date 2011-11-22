@@ -5,7 +5,7 @@ if __name__ == "__main__":
   from gi.repository import Gtk, Gio
   from argonautics.ui import UI
   from argonautics.directory_filler import DirectoryFiller
-  from argonautics.file_manager import FileManager
+  from argonautics.file_opener import FileOpener
   from argonautics.menu_sensitizer import MenuSensitizer
   import os
 
@@ -15,10 +15,10 @@ if __name__ == "__main__":
   directory_filler = DirectoryFiller(storage,directory)
 
   builder = Gtk.Builder()
-  file_manager = FileManager
+  file_opener = FileOpener
   menu_sensitizer = MenuSensitizer
 
-  ui = UI(builder, file_manager, menu_sensitizer)
+  ui = UI(builder, file_opener, menu_sensitizer)
 
 
   ui.setup_file_icons(directory_filler.get_store())
