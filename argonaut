@@ -9,9 +9,14 @@ if __name__ == "__main__":
   from argonautics.menu_sensitizer import MenuSensitizer
   from argonautics.deletion_prompter import DeletionPrompter
   import os
+  import sys
 
+  if len(sys.argv) > 1:
+    directory_path = sys.argv[1]
+  else:
+    directory_path = os.getcwd()
 
-  directory = Gio.file_new_for_commandline_arg(os.getcwd())
+  directory = Gio.file_new_for_commandline_arg(directory_path)
   storage = Gtk.ListStore
   directory_filler = DirectoryFiller(storage,directory)
 
