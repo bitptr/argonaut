@@ -1,8 +1,9 @@
 from gi.repository import Gtk
 from argonautics.selected_files_iterator import SelectedFilesIterator
+from argonautics.file_deleter import FileDeleter
 
 class UI:
-  def __init__(self, builder, file_opener_factory, menu_sensitizer_factory):
+  def __init__(self, builder, file_opener_factory, menu_sensitizer_factory, deletion_prompter_factory):
     builder.add_from_file("argonaut.ui")
 
     self.directory_window = builder.get_object("directory-window")
@@ -20,6 +21,9 @@ class UI:
     selected_files_iterator = SelectedFilesIterator(self._file_icons)
 
     self._file_opener = file_opener_factory(selected_files_iterator)
+    self._deletion_prompter = deletion_prompter_factory(
+        selected_files_iterator,
+        FileDeleter)
     self._menu_sensitizer = menu_sensitizer_factory([
         self._file_open_menu_item,
         self._file_uncompress_menu_item,
@@ -37,6 +41,8 @@ class UI:
         self._menu_sensitizer.change_sensitivity)
     self._file_open_menu_item.connect("activate",
         self._file_opener.run)
+    self._file_delete_menu_item.connect("activate",
+        self._deletion_prompter.run)
 
   def setup_file_icons(self, directory_store):
     self._file_icons.set_model(directory_store)

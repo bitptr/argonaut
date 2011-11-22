@@ -7,6 +7,7 @@ if __name__ == "__main__":
   from argonautics.directory_filler import DirectoryFiller
   from argonautics.file_opener import FileOpener
   from argonautics.menu_sensitizer import MenuSensitizer
+  from argonautics.deletion_prompter import DeletionPrompter
   import os
 
 
@@ -17,8 +18,9 @@ if __name__ == "__main__":
   builder = Gtk.Builder()
   file_opener = FileOpener
   menu_sensitizer = MenuSensitizer
+  deletion_prompter = DeletionPrompter
 
-  ui = UI(builder, file_opener, menu_sensitizer)
+  ui = UI(builder, file_opener, menu_sensitizer, deletion_prompter)
 
 
   ui.setup_file_icons(directory_filler.get_store())
