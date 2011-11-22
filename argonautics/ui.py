@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from argonautics.selected_files_iterator import SelectedFilesIterator
 
 class UI:
   def __init__(self, builder, file_opener_factory, menu_sensitizer_factory):
@@ -16,7 +17,9 @@ class UI:
     self._file_delete_menu_item = builder.get_object("file-delete-menu-item")
     self._edit_cut_menu_item = builder.get_object("edit-cut-menu-item")
 
-    self._file_opener = file_opener_factory(self._file_icons)
+    selected_files_iterator = SelectedFilesIterator(self._file_icons)
+
+    self._file_opener = file_opener_factory(selected_files_iterator)
     self._menu_sensitizer = menu_sensitizer_factory([
         self._file_open_menu_item,
         self._file_uncompress_menu_item,
