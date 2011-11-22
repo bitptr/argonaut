@@ -1,4 +1,4 @@
-class FileSelection:
+class MenuSensitizer:
   def __init__(self, menu_items):
     self._menu_items = menu_items
 

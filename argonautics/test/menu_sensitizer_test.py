@@ -1,14 +1,14 @@
 import unittest
 
-from argonautics.file_selection import FileSelection
+from argonautics.menu_sensitizer import MenuSensitizer
 from argonautics.test.support.mock_menu_item import *
 from argonautics.test.support.mock_icon_view import *
 
-class TestFileSelection(unittest.TestCase):
+class TestMenuSensitizer(unittest.TestCase):
   def testSetsSensitivityForEachMenuItem(self):
     mock_menu_item1 = MockMenuItem(self)
     mock_menu_item2 = MockMenuItem(self)
-    file_selection = FileSelection([mock_menu_item1, mock_menu_item2])
+    file_selection = MenuSensitizer([mock_menu_item1, mock_menu_item2])
 
     file_selection.set_sensitivity_to(True)
     mock_menu_item1.assertSensitized()
@@ -20,7 +20,7 @@ class TestFileSelection(unittest.TestCase):
 
   def testKnowsHowToSetSensitivityForAnIconView(self):
     mock_menu_item = MockMenuItem(self)
-    file_selection = FileSelection([mock_menu_item])
+    file_selection = MenuSensitizer([mock_menu_item])
     mock_selected_icon_view = MockIconView(self, get_selected_items=[1])
     mock_unselected_icon_view = MockIconView(self, get_selected_items=[])
 

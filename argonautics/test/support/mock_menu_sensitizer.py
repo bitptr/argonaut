@@ -1,4 +1,4 @@
-class MockFileSelection:
+class MockMenuSensitizer:
   def __init__(self, test_case):
     self._test_case = test_case
     self._sensitivity = True
