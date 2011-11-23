@@ -8,6 +8,7 @@ if __name__ == "__main__":
   from argonautics.file_opener import FileOpener
   from argonautics.menu_sensitizer import MenuSensitizer
   from argonautics.deletion_prompter import DeletionPrompter
+  from argonautics.directory_monitor import DirectoryMonitor
   import os
   import sys
 
@@ -18,6 +19,7 @@ if __name__ == "__main__":
 
   directory = Gio.file_new_for_commandline_arg(directory_path)
   storage = Gtk.ListStore
+
   directory_filler = DirectoryFiller(storage,directory)
 
   builder = Gtk.Builder()
@@ -27,8 +29,11 @@ if __name__ == "__main__":
 
   ui = UI(builder, file_opener, menu_sensitizer, deletion_prompter)
 
+  directory_monitor = DirectoryMonitor(directory, directory_filler)
+
 
   ui.setup_file_icons(directory_filler.get_store())
+  directory_monitor.start_watching()
   ui.setup_signals()
   ui.desensitize_file_menu()
 
