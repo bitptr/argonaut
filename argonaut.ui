@@ -269,6 +269,8 @@
           <object class="GtkIconView" id="file-icons">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="selection_mode">multiple</property>
           </object>
           <packing>
