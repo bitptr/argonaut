@@ -1,3 +1,4 @@
+AM_CPPFLAGS = -DDATADIR=\"$(datadir)\"
 bin_PROGRAMS = argonaut
 dist_argonaut_SOURCES = main.c
 argonaut_CFLAGS = $(GTK_CFLAGS)

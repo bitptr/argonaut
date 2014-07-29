@@ -1,10 +1,14 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <gtk/gtk.h>
 #include <err.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
 
-#define INTERFACE_PATH "/home/mike/argonaut/argonaut.ui"
+#define INTERFACE_PATH DATADIR"/argonaut.ui"
 #define DEFAULT_HEIGHT 350
 #define DEFAULT_WIDTH 700
 

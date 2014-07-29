@@ -24,10 +24,10 @@ Setup
 
 Depends on gtk+-3.0.
 
-Run:
+To develop:
 
   ./autogen.sh
-  ./configure
+  ./configure --datadir=$PWD
   make
 
 Copyright
