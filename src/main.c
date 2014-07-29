@@ -10,6 +10,7 @@
 extern int errno;
 
 int populate(GtkListStore *, const char*);
+void store_insert(GtkListStore *, struct dirent *);
 
 int
 main(int argc, char *argv[]) {
@@ -46,28 +47,38 @@ int
 populate(GtkListStore *model, const char *directory) {
 	DIR *dirp;
 	struct dirent *dp;
-	GtkTreeIter iter;
-	GdkPixbuf *pixbuf;
-
-	pixbuf = gdk_pixbuf_new_from_file(
-	    "/usr/local/share/icons/gnome/32x32/mimetypes/gtk-file.png",
-	    NULL);
-	if (!pixbuf)
-	  errx(66, "could not load the pixbuf");
 
 	dirp = opendir(directory);
 	if (dirp) {
-		while ((dp = readdir(dirp)) != NULL) {
-			if (dp->d_name[0] != '.') {
-				gtk_list_store_append(model, &iter);
-				gtk_list_store_set(model, &iter,
-				    0, dp->d_name,
-				    1, GDK_PIXBUF(pixbuf),
-				    -1);
-			}
-		}
+		while ((dp = readdir(dirp)) != NULL)
+			if (dp->d_name[0] != '.')
+                        	store_insert(model, dp);
 		return closedir(dirp);
 	}
 
 	return -1;
+}
+
+void
+store_insert(GtkListStore *model, struct dirent *dp) {
+	GtkTreeIter iter;
+	GdkPixbuf *file_pixbuf, *dir_pixbuf;
+
+	file_pixbuf = gdk_pixbuf_new_from_file(
+	    "/usr/local/share/icons/gnome/32x32/mimetypes/gtk-file.png",
+	    NULL);
+	if (!file_pixbuf)
+	  errx(66, "could not load the file pixbuf");
+
+	dir_pixbuf = gdk_pixbuf_new_from_file(
+	    "/usr/local/share/icons/gnome/32x32/places/folder.png",
+	    NULL);
+	if (!dir_pixbuf)
+	  errx(66, "could not load the directory pixbuf");
+
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+	    0, dp->d_name,
+	    1, GDK_PIXBUF(dp->d_type == DT_DIR ? dir_pixbuf : file_pixbuf),
+	    -1);
 }
