@@ -58,11 +58,13 @@ populate(GtkListStore *model, const char *directory) {
 	dirp = opendir(directory);
 	if (dirp) {
 		while ((dp = readdir(dirp)) != NULL) {
-			gtk_list_store_append(model, &iter);
-			gtk_list_store_set(model, &iter,
-			    0, "hello",
-			    1, GDK_PIXBUF(pixbuf),
-			    -1);
+			if (dp->d_name[0] != '.') {
+				gtk_list_store_append(model, &iter);
+				gtk_list_store_set(model, &iter,
+				    0, dp->d_name,
+				    1, GDK_PIXBUF(pixbuf),
+				    -1);
+			}
 		}
 		return closedir(dirp);
 	}
