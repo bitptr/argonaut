@@ -22,7 +22,7 @@ Things that make it spatial:
 Setup
 -----
 
-Depends on gtk+-3.0.
+Depends on GTK+ 3 and GModule 2.
 
 To develop:
 

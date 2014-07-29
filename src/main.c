@@ -29,6 +29,11 @@ main(int argc, char *argv[]) {
 
 	builder = gtk_builder_new_from_file(INTERFACE_PATH);
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "directory-window"));
+	icons = GTK_WIDGET(gtk_builder_get_object(builder, "file-icons"));
+
+	gtk_builder_connect_signals(builder, NULL);
+	g_object_unref(builder);
+
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_window_set_default_size(GTK_WINDOW(window), DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -37,9 +42,8 @@ main(int argc, char *argv[]) {
 
 	model = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 	if (populate(model, dir) == -1)
-	  err(66, "failed to populate icon model from %s", dir);
+		err(66, "failed to populate icon model from %s", dir);
 
-	icons = GTK_WIDGET(gtk_builder_get_object(builder, "file-icons"));
 	gtk_icon_view_set_text_column(GTK_ICON_VIEW(icons), 0);
 	gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(icons), 1);
 	gtk_icon_view_set_model(GTK_ICON_VIEW(icons), GTK_TREE_MODEL(model));

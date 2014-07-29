@@ -3,6 +3,6 @@ AC_INIT([argonaut], [0.1])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
-PKG_CHECK_MODULES(GTK, gtk+-3.0)
+PKG_CHECK_MODULES(GTK, gtk+-3.0 gmodule-2.0)
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
