@@ -2,6 +2,7 @@
 #include <err.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <stdlib.h>
 
 #define INTERFACE_PATH "/home/mike/argonaut/argonaut.ui"
 #define DEFAULT_HEIGHT 350
@@ -9,7 +10,7 @@
 
 extern int errno;
 
-int populate(GtkListStore *, const char*);
+int populate(GtkListStore *, char*);
 void store_insert(GtkListStore *, struct dirent *);
 
 int
@@ -18,6 +19,7 @@ main(int argc, char *argv[]) {
 	GtkWidget *window;
 	GtkWidget *icons;
 	GtkListStore *model;
+        char *dir;
 
 	gtk_init(&argc, &argv);
 
@@ -26,9 +28,12 @@ main(int argc, char *argv[]) {
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_window_set_default_size(GTK_WINDOW(window), DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
+	if ((dir = getenv("HOME")) == NULL)
+		dir = "/";
+
 	model = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
-	if (populate(model, "/home/mike") == -1)
-	  err(66, "failed to populate icon model from /home/mike");
+	if (populate(model, dir) == -1)
+	  err(66, "failed to populate icon model from %s", dir);
 
 	icons = GTK_WIDGET(gtk_builder_get_object(builder, "file-icons"));
 	gtk_icon_view_set_text_column(GTK_ICON_VIEW(icons), 0);
@@ -44,7 +49,7 @@ main(int argc, char *argv[]) {
 }
 
 int
-populate(GtkListStore *model, const char *directory) {
+populate(GtkListStore *model, char *directory) {
 	DIR *dirp;
 	struct dirent *dp;
 
