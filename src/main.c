@@ -76,15 +76,23 @@ void
 store_insert(GtkListStore *model, struct dirent *dp) {
 	GtkTreeIter iter;
 	GdkPixbuf *file_pixbuf, *dir_pixbuf;
+	GtkIconTheme *icon_theme;
 
-	file_pixbuf = gdk_pixbuf_new_from_file(
-	    "/usr/local/share/icons/gnome/32x32/mimetypes/gtk-file.png",
+	icon_theme = gtk_icon_theme_get_default();
+	file_pixbuf = gtk_icon_theme_load_icon(
+	    icon_theme,
+	    "text-x-generic", // icon name
+	    32, // icon size
+	    0,  // flags
 	    NULL);
 	if (!file_pixbuf)
 	  errx(66, "could not load the file pixbuf");
 
-	dir_pixbuf = gdk_pixbuf_new_from_file(
-	    "/usr/local/share/icons/gnome/32x32/places/folder.png",
+	dir_pixbuf = gtk_icon_theme_load_icon(
+	    icon_theme,
+	    "folder",
+	    32,
+	    0,
 	    NULL);
 	if (!dir_pixbuf)
 	  errx(66, "could not load the directory pixbuf");
