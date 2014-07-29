@@ -22,9 +22,13 @@ Things that make it spatial:
 Setup
 -----
 
-Depends on pygobject.
+Depends on gtk+-3.0.
 
-To run the a test you must set PYTHONPATH to the repo's root directory.
+Run:
+
+  ./autogen.sh
+  ./configure
+  make
 
 Copyright
 ---------
