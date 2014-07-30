@@ -24,6 +24,8 @@ int		 populate(GtkListStore *, char*);
 void		 store_insert(GtkListStore *, struct dirent *, char *);
 GtkWidget	*prepare_window(char *);
 __dead void	 usage();
+char		*getdir(int, char **);
+
 /*
  * A spatial file manager. Treat directories as independent resources with
  * fixed positions. Useful for navigating your filesystem with a predictable
@@ -34,9 +36,6 @@ main(int argc, char *argv[])
 {
 	GtkWidget *window;
 	char *dir, ch;
-
-	if ((dir = getenv("HOME")) == NULL)
-		dir = "/";
 
 	gtk_init(&argc, &argv);
 
@@ -49,6 +48,7 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
+	dir = getdir(argc, argv);
 	window = prepare_window(dir);
 
 	gtk_widget_show(window);
@@ -64,9 +64,25 @@ void
 usage()
 {
 	extern char *__progname;
-	fprintf(stderr, "usage: %s\n", __progname);
+	fprintf(stderr, "usage: %s [dir]\n", __progname);
 
 	exit(64);
+}
+
+char *
+getdir(int argc, char *argv[])
+{
+	char *dir;
+
+	if (argc > 0)
+		dir = argv[0];
+	else
+		dir = getenv("HOME");
+
+	if (dir == NULL)
+		dir = "/";
+
+	return dir;
 }
 
 /*
