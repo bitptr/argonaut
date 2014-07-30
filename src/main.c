@@ -13,6 +13,7 @@
 
 #include <gtk/gtk.h>
 
+#include "extern.h"
 #include "pathnames.h"
 
 #define DEFAULT_HEIGHT 350
@@ -173,8 +174,8 @@ store_insert(GtkListStore *model, struct dirent *dp, char *directory)
 
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
-	    0, dp->d_name,
-	    1, GDK_PIXBUF(dp->d_type == DT_DIR ? dir_pixbuf : file_pixbuf),
-	    2, directory,
+	    FILE_NAME, dp->d_name,
+	    FILE_ICON, GDK_PIXBUF(dp->d_type == DT_DIR ? dir_pixbuf : file_pixbuf),
+	    FILE_PARENT, directory,
 	    -1);
 }

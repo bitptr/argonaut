@@ -8,6 +8,8 @@
 
 #include <gtk/gtk.h>
 
+#include "extern.h"
+
 void	on_directory_close(GtkMenuItem *, gpointer);
 void	on_item_activated(GtkIconView *, GtkTreePath *, gpointer);
 
@@ -43,8 +45,8 @@ on_item_activated(GtkIconView *iconview, GtkTreePath *path, gpointer user_data)
 	gtk_tree_model_get(
 	    GTK_TREE_MODEL(model),
 	    &iter,
-	    0, &name,
-	    2, &directory,
+	    FILE_NAME, &name,
+	    FILE_PARENT, &directory,
 	    -1);
 
 	fullpath = g_strdup_printf("file://%s/%s", directory, name);
