@@ -8,6 +8,8 @@
 #include <dirent.h>
 #include <stdlib.h>
 
+#include "global.h"
+
 #define INTERFACE_PATH DATADIR"/argonaut.ui"
 #define DEFAULT_HEIGHT 350
 #define DEFAULT_WIDTH 700
@@ -15,14 +17,13 @@
 extern int errno;
 
 int populate(GtkListStore *, char*);
-void store_insert(GtkListStore *, struct dirent *);
+void store_insert(GtkListStore *, struct dirent *, char *);
 
 int
 main(int argc, char *argv[]) {
 	GtkBuilder *builder;
 	GtkWidget *window;
 	GtkWidget *icons;
-	GtkListStore *model;
         char *dir;
 
 	gtk_init(&argc, &argv);
@@ -40,14 +41,14 @@ main(int argc, char *argv[]) {
 	if ((dir = getenv("HOME")) == NULL)
 		dir = "/";
 
-	model = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
+	model = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 	if (populate(model, dir) == -1)
 		err(66, "failed to populate icon model from %s", dir);
 
 	gtk_icon_view_set_text_column(GTK_ICON_VIEW(icons), 0);
 	gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(icons), 1);
 	gtk_icon_view_set_model(GTK_ICON_VIEW(icons), GTK_TREE_MODEL(model));
-	g_object_unref(model);
+//	g_object_unref(model);
 
 	gtk_widget_show(window);
 
@@ -65,7 +66,7 @@ populate(GtkListStore *model, char *directory) {
 	if (dirp) {
 		while ((dp = readdir(dirp)) != NULL)
 			if (dp->d_name[0] != '.')
-                        	store_insert(model, dp);
+				store_insert(model, dp, directory);
 		return closedir(dirp);
 	}
 
@@ -73,7 +74,7 @@ populate(GtkListStore *model, char *directory) {
 }
 
 void
-store_insert(GtkListStore *model, struct dirent *dp) {
+store_insert(GtkListStore *model, struct dirent *dp, char *directory) {
 	GtkTreeIter iter;
 	GdkPixbuf *file_pixbuf, *dir_pixbuf;
 	GtkIconTheme *icon_theme;
@@ -101,5 +102,6 @@ store_insert(GtkListStore *model, struct dirent *dp) {
 	gtk_list_store_set(model, &iter,
 	    0, dp->d_name,
 	    1, GDK_PIXBUF(dp->d_type == DT_DIR ? dir_pixbuf : file_pixbuf),
+	    2, directory,
 	    -1);
 }

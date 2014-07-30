@@ -281,6 +281,7 @@
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="selection_mode">multiple</property>
+		<signal name="item-activated" handler="on_item_activated" swapped="no"/>
               </object>
             </child>
           </object>
