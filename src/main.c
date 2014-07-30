@@ -19,8 +19,9 @@
 
 extern int errno;
 
-int	populate(GtkListStore *, char*);
-void	store_insert(GtkListStore *, struct dirent *, char *);
+int		 populate(GtkListStore *, char*);
+void		 store_insert(GtkListStore *, struct dirent *, char *);
+GtkWidget	*prepare_window(char *);
 
 /*
  * A spatial file manager. Treat directories as independent resources with
@@ -30,12 +31,31 @@ void	store_insert(GtkListStore *, struct dirent *, char *);
 int
 main(int argc, char *argv[])
 {
+	GtkWidget *window;
+	char *dir;
+
+	if ((dir = getenv("HOME")) == NULL)
+		dir = "/";
+
+	gtk_init(&argc, &argv);
+	window = prepare_window(dir);
+
+	gtk_widget_show(window);
+	gtk_main ();
+
+	return 0;
+}
+
+/*
+ * Set up the window: build the interface, connect the signals, insert the
+ * file icons.
+ */
+GtkWidget *
+prepare_window(char *dir)
+{
 	GtkBuilder *builder;
 	GtkWidget *icons, *window;
 	GtkListStore *model;
-	char *dir;
-
-	gtk_init(&argc, &argv);
 
 	builder = gtk_builder_new_from_file(INTERFACE_PATH);
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "directory-window"));
@@ -47,9 +67,6 @@ main(int argc, char *argv[])
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_window_set_default_size(GTK_WINDOW(window), DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-	if ((dir = getenv("HOME")) == NULL)
-		dir = "/";
-
 	model = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 	if (populate(model, dir) == -1)
 		err(66, "failed to populate icon model from %s", dir);
@@ -59,11 +76,7 @@ main(int argc, char *argv[])
 	gtk_icon_view_set_model(GTK_ICON_VIEW(icons), GTK_TREE_MODEL(model));
 	g_object_unref(model);
 
-	gtk_widget_show(window);
-
-	gtk_main ();
-
-	return 0;
+	return window;
 }
 
 /*
