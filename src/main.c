@@ -48,7 +48,7 @@ main(int argc, char *argv[]) {
 	gtk_icon_view_set_text_column(GTK_ICON_VIEW(icons), 0);
 	gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(icons), 1);
 	gtk_icon_view_set_model(GTK_ICON_VIEW(icons), GTK_TREE_MODEL(model));
-//	g_object_unref(model);
+	g_object_unref(model);
 
 	gtk_widget_show(window);
 
