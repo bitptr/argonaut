@@ -2,26 +2,36 @@
 #include <config.h>
 #endif
 
+#include <err.h>
+
 #include <gtk/gtk.h>
 
-#include "global.h"
+void	on_directory_close(GtkMenuItem *, gpointer);
+void	on_item_activated(GtkIconView *, GtkTreePath *, gpointer);
 
-void on_directory_close(GtkMenuItem *, gpointer);
-void on_item_activated(GtkIconView *, GtkTreePath *, gpointer);
-
+/*
+ * Closing the directory is the same as quitting the program.
+ */
 void
-on_directory_close (GtkMenuItem *menuitem, gpointer user_data) {
+on_directory_close(GtkMenuItem *menuitem, gpointer user_data)
+{
 	gtk_main_quit();
 }
 
+/*
+ * Open the file using guesses from XDG.
+ */
 void
-on_item_activated(GtkIconView *iconview, GtkTreePath *path, gpointer user_data) {
-	GtkTreeIter iter;
-	gchar *name;
-	gchar *directory;
-	gchar *fullpath;
+on_item_activated(GtkIconView *iconview, GtkTreePath *path, gpointer user_data)
+{
 	GdkScreen *screen;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	gchar *directory, *fullpath, *name;
 	GError *error = NULL;
+
+	if ((model = gtk_icon_view_get_model(iconview)) == NULL)
+		errx(66, "could not find the model for the icon view");
 
 	gtk_tree_model_get_iter(
 	    GTK_TREE_MODEL(model),
@@ -43,7 +53,7 @@ on_item_activated(GtkIconView *iconview, GtkTreePath *path, gpointer user_data) 
 	   &error);
 
 	if (error)
-	  g_print("%s\n", error->message);
+		g_print("%s\n", error->message);
 
 	g_free(name);
 	g_free(directory);

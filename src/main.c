@@ -2,29 +2,36 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
-#include <err.h>
 #include <sys/types.h>
+
 #include <dirent.h>
+#include <err.h>
 #include <stdlib.h>
 
-#include "global.h"
+#include <gtk/gtk.h>
 
-#define INTERFACE_PATH DATADIR"/argonaut.ui"
+#include "pathnames.h"
+
 #define DEFAULT_HEIGHT 350
 #define DEFAULT_WIDTH 700
 
 extern int errno;
 
-int populate(GtkListStore *, char*);
-void store_insert(GtkListStore *, struct dirent *, char *);
+int	populate(GtkListStore *, char*);
+void	store_insert(GtkListStore *, struct dirent *, char *);
 
+/*
+ * A spatial file manager. Treat directories as independent resources with
+ * fixed positions. Useful for navigating your filesystem with a predictable
+ * GUI.
+ */
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	GtkBuilder *builder;
-	GtkWidget *window;
-	GtkWidget *icons;
-        char *dir;
+	GtkWidget *icons, *window;
+	GtkListStore *model;
+	char *dir;
 
 	gtk_init(&argc, &argv);
 
@@ -57,8 +64,12 @@ main(int argc, char *argv[]) {
 	return 0;
 }
 
+/*
+ * Add each file in the directory into the model.
+ */
 int
-populate(GtkListStore *model, char *directory) {
+populate(GtkListStore *model, char *directory)
+{
 	DIR *dirp;
 	struct dirent *dp;
 
@@ -73,21 +84,25 @@ populate(GtkListStore *model, char *directory) {
 	return -1;
 }
 
+/*
+ * Add to the model the file name, directory name, and an icon.
+ */
 void
-store_insert(GtkListStore *model, struct dirent *dp, char *directory) {
-	GtkTreeIter iter;
-	GdkPixbuf *file_pixbuf, *dir_pixbuf;
+store_insert(GtkListStore *model, struct dirent *dp, char *directory)
+{
+	GdkPixbuf *dir_pixbuf, *file_pixbuf;
 	GtkIconTheme *icon_theme;
+	GtkTreeIter iter;
 
 	icon_theme = gtk_icon_theme_get_default();
 	file_pixbuf = gtk_icon_theme_load_icon(
 	    icon_theme,
-	    "text-x-generic", // icon name
-	    32, // icon size
-	    0,  // flags
+	    "text-x-generic", /* icon name */
+	    32, /* icon size */
+	    0,  /* flags */
 	    NULL);
 	if (!file_pixbuf)
-	  errx(66, "could not load the file pixbuf");
+		errx(66, "could not load the file pixbuf");
 
 	dir_pixbuf = gtk_icon_theme_load_icon(
 	    icon_theme,
@@ -96,7 +111,7 @@ store_insert(GtkListStore *model, struct dirent *dp, char *directory) {
 	    0,
 	    NULL);
 	if (!dir_pixbuf)
-	  errx(66, "could not load the directory pixbuf");
+		errx(66, "could not load the directory pixbuf");
 
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
