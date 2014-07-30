@@ -69,6 +69,10 @@ usage()
 	exit(64);
 }
 
+/*
+ * Pick the right starting directory. First try the name passed on the
+ * command-line, then $HOME, and finally fall back to / .
+ */
 char *
 getdir(int argc, char *argv[])
 {
