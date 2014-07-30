@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <err.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <gtk/gtk.h>
 
@@ -22,7 +23,7 @@ extern int errno;
 int		 populate(GtkListStore *, char*);
 void		 store_insert(GtkListStore *, struct dirent *, char *);
 GtkWidget	*prepare_window(char *);
-
+__dead void	 usage();
 /*
  * A spatial file manager. Treat directories as independent resources with
  * fixed positions. Useful for navigating your filesystem with a predictable
@@ -32,18 +33,40 @@ int
 main(int argc, char *argv[])
 {
 	GtkWidget *window;
-	char *dir;
+	char *dir, ch;
 
 	if ((dir = getenv("HOME")) == NULL)
 		dir = "/";
 
 	gtk_init(&argc, &argv);
+
+	while ((ch = getopt(argc, argv, "")) != -1)
+		switch (ch) {
+		default:
+			usage();
+			/* NOTREACHED */
+		}
+	argc -= optind;
+	argv += optind;
+
 	window = prepare_window(dir);
 
 	gtk_widget_show(window);
 	gtk_main ();
 
 	return 0;
+}
+
+/*
+ * Show a usage message.
+ */
+void
+usage()
+{
+	extern char *__progname;
+	fprintf(stderr, "usage: %s\n", __progname);
+
+	exit(64);
 }
 
 /*
