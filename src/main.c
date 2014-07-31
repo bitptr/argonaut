@@ -8,7 +8,9 @@
 
 #include <dirent.h>
 #include <err.h>
+#include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <gtk/gtk.h>
@@ -24,7 +26,7 @@ extern int errno;
 
 int		 populate(GtkListStore *, char*);
 void		 store_insert(GtkListStore *, struct dirent *, char *);
-GtkWidget	*prepare_window(char *);
+GtkWidget	*prepare_window(struct cb_data *, char *);
 __dead void	 usage();
 char		*getdir(int, char **);
 
@@ -38,6 +40,10 @@ main(int argc, char *argv[])
 {
 	GtkWidget *window;
 	char *dir, ch;
+        struct cb_data *d;
+
+	if ((d = cb_data_new(argv[0])) == NULL)
+		err(1, "could not build the callback data");
 
 	gtk_init(&argc, &argv);
 
@@ -51,10 +57,13 @@ main(int argc, char *argv[])
 	argv += optind;
 
 	dir = getdir(argc, argv);
-	window = prepare_window(dir);
+
+	window = prepare_window(d, dir);
 
 	gtk_widget_show(window);
-	gtk_main ();
+	gtk_main();
+
+	cb_data_free(d);
 
 	return 0;
 }
@@ -96,7 +105,7 @@ getdir(int argc, char *argv[])
  * file icons.
  */
 GtkWidget *
-prepare_window(char *dir)
+prepare_window(struct cb_data *d, char *dir)
 {
 	GtkBuilder *builder;
 	GtkWidget *icons, *window;
@@ -106,13 +115,15 @@ prepare_window(char *dir)
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "directory-window"));
 	icons = GTK_WIDGET(gtk_builder_get_object(builder, "file-icons"));
 
-	gtk_builder_connect_signals(builder, NULL);
+	gtk_builder_connect_signals(builder, d);
 	g_object_unref(builder);
 
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-	gtk_window_set_default_size(GTK_WINDOW(window), DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	gtk_window_set_default_size(GTK_WINDOW(window), DEFAULT_WIDTH,
+	    DEFAULT_HEIGHT);
 
-	model = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+	model = gtk_list_store_new(4, G_TYPE_STRING, GDK_TYPE_PIXBUF,
+	    G_TYPE_STRING, G_TYPE_INT);
 	if (populate(model, dir) == -1)
 		err(66, "failed to populate icon model from %s", dir);
 
@@ -178,5 +189,6 @@ store_insert(GtkListStore *model, struct dirent *dp, char *directory)
 	    FILE_NAME, dp->d_name,
 	    FILE_ICON, GDK_PIXBUF(dp->d_type == DT_DIR ? dir_pixbuf : file_pixbuf),
 	    FILE_PARENT, directory,
+	    FILE_TYPE, dp->d_type,
 	    -1);
 }
