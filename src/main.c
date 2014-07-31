@@ -13,6 +13,7 @@
 
 #include <gtk/gtk.h>
 
+#include "compat.h"
 #include "extern.h"
 #include "pathnames.h"
 

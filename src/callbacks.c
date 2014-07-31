@@ -8,6 +8,7 @@
 
 #include <gtk/gtk.h>
 
+#include "compat.h"
 #include "extern.h"
 
 void	on_directory_close(GtkMenuItem *, gpointer);
