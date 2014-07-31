@@ -19,9 +19,9 @@
 struct cb_data *
 cb_data_new(char *argv0)
 {
-	struct cb_data *d;
-	char *progname;
-	size_t len, cpy_len;
+	struct cb_data	*d;
+	char		*progname;
+	size_t		 len, cpy_len;
 
         if ((d = (struct cb_data*)malloc(sizeof(struct cb_data))) == NULL)
 		goto error;

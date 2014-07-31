@@ -30,12 +30,14 @@ on_directory_close(GtkMenuItem *menuitem, gpointer user_data)
 void
 on_item_activated(GtkIconView *iconview, GtkTreePath *path, struct cb_data *user_data)
 {
-	GdkScreen *screen;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-	gchar *directory, *fullpath, *name;
-	gint type;
-	GError *error = NULL;
+	gchar		*directory, *fullpath, *name;
+	GdkScreen	*screen;
+	GtkTreeModel	*model;
+	GtkTreeIter	 iter;
+	gint		 type;
+	GError		*error;
+	
+	error = NULL;
         
 	if ((model = gtk_icon_view_get_model(iconview)) == NULL)
 		errx(66, "could not find the model for the icon view");

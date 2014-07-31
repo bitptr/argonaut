@@ -22,13 +22,21 @@ Things that make it spatial:
 Setup
 -----
 
-Depends on GTK+ 3, GModule 2, and GIO 2.
+Depends on GTK+ 3, GModule 2, GIO 2, and BDB.
 
 To develop:
 
   ./autogen.sh
   ./configure --datadir=$PWD
   make
+
+You may need to set your `CFLAGS` and `LDFLAGS`. These are the recommended
+settings for OpenBSD:
+
+    export AUTOMAKE_VERSION=1.14
+    export AUTOCONF_VERSION=2.69
+    export CFLAGS="-I /usr/local/include/db4"
+    export LDFLAGS="-L /usr/local/lib/db4"
 
 Copyright
 ---------

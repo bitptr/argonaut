@@ -12,8 +12,8 @@ enum model_storage {
 };
 
 struct cb_data {
-        char *prog_path; /* The full path to argonaut */
-	char *argv0; /* How the user calls argonaut */
+        char	*prog_path;	/* The full path to argonaut */
+	char	*argv0;		/* How the user calls argonaut */
 };
 
 struct cb_data	*cb_data_new(char *);

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-aclocal && autoconf && automake --add-missing --copy
+aclocal -I m4 && autoconf && automake --add-missing --copy

@@ -17,7 +17,7 @@
 void
 open_directory(struct cb_data *user_data, gchar *fullpath)
 {
-	pid_t pid;
+	pid_t	pid;
 
 	pid = fork();
 	switch(pid) {
