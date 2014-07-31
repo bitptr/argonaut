@@ -15,12 +15,9 @@
  * Open a new argonaut on the specified directory.
  */
 void
-open_directory(struct cb_data *user_data, gchar *parent, gchar *dir_name)
+open_directory(struct cb_data *user_data, gchar *fullpath)
 {
 	pid_t pid;
-	gchar *dirpath;
-
-	dirpath = g_strdup_printf("/%s/%s", parent, dir_name);
 
 	pid = fork();
 	switch(pid) {
@@ -28,12 +25,10 @@ open_directory(struct cb_data *user_data, gchar *parent, gchar *dir_name)
 		warn("could not open directory");
 		break;
 	case 0:
-		execl(user_data->prog_path, user_data->argv0, dirpath, NULL);
+		execl(user_data->prog_path, user_data->argv0, fullpath, NULL);
 		/* NOTREACHED */
 		break;
 	default:
 		break;
 	}
-
-	g_free(dirpath);
 }

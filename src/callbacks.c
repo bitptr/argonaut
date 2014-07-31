@@ -56,7 +56,7 @@ on_item_activated(GtkIconView *iconview, GtkTreePath *path, struct cb_data *user
 	fullpath = g_strdup_printf("file://%s/%s", directory, name);
 
 	if (type == DT_DIR) {
-		open_directory(user_data, directory, name);
+		open_directory(user_data, fullpath);
 	} else {
 		screen = gdk_screen_get_default();
 		gtk_show_uri(screen, fullpath, GDK_CURRENT_TIME, &error);

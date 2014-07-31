@@ -7,6 +7,6 @@
 
 #include "extern.h"
 
-void	open_directory(struct cb_data *, gchar *, gchar *);
+void	open_directory(struct cb_data *, gchar *);
 
 #endif /* DIRECTORY_H */
