@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <gio/gio.h>
 #include <gtk/gtk.h>
 
 #include "compat.h"
@@ -88,10 +89,23 @@ char *
 getdir(int argc, char *argv[])
 {
 	char *dir;
+	const char *cwd;
+	GFile *g_dir;
 
-	if (argc > 0)
-		dir = argv[0];
-	else
+	dir = NULL;
+
+	if (argc > 0) {
+		if ((cwd = getcwd(NULL, 0)) == NULL)
+			warnx("could not get the current working directory");
+		else {
+			g_dir = g_file_new_for_commandline_arg_and_cwd(
+			    argv[0], cwd);
+			if ((dir = g_file_get_path(g_dir)) == NULL)
+				warnx("no such directory: %s", argv[0]);
+
+			g_object_unref(g_dir);
+		}
+	} else
 		dir = getenv("HOME");
 
 	if (dir == NULL)
