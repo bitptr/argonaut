@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS= src
+SUBDIRS= man src
 dist_pkgdata_DATA = argonaut.ui

@@ -1,0 +1,85 @@
+.Dd August 4, 2014
+.Dt ARGONAUT 1
+.Os
+.Sh NAME
+.Nm argonaut
+.Nd graphical, spatial directory navigator
+.Sh SYNOPSIS
+.Nm argonaut
+.Op DIR
+.Sh DESCRIPTION
+The
+.Nm
+utility shows the files in the given directory in a GUI window.
+This window is always shown in the same position, of the same size, and exactly
+once.
+The files shown in the window have actions that can be applied to them; these
+are found in a menu, which is always displayed.
+Opening a directory from within
+.Nm
+will open that directory in its own window, as if you ran
+.Nm
+passing the new directory as an argument.
+.
+.Sh ENVIRONMENT
+.
+This program makes use of the GTK+ library, which in turn supports many environment variables.
+Since we do not control these environment variables we instead suggest you look in 
+.Lk https://developer.gnome.org/gtk3/stable/gtk-running.html the GTK documentation
+.
+.Sh FILES
+.
+.Bl -tag -width "~/.argonautinfo" -compact
+.It Pa ~/.argonautinfo
+The database of window geometries, stored in Berkelee DB format.
+.El
+.
+.Sh EXIT STATUS
+The
+.Nm
+utility exits 0 on success and >0 if an error occurs.
+.Sh EXAMPLES
+.
+To open your home directory, pass no arguments:
+.Pp
+.Dl argonaut
+.Pp
+Passing a directory name as an argument will open that directory:
+.Pp
+.Dl argonaut /etc
+.Pp
+Directories can be relative:
+.Pp
+.Dl argonaut bin/
+.
+.Sh DIAGNOSTICS
+.Bl -diag
+.It argonaut: could not create the db
+The
+.Pa .argonautinfo
+database could not be opened or operated on.
+Check the file's permissions and, failing that, move the file away.
+.It argonaut: could not open the db
+The
+.Pa .argonautinfo
+database is corrupted.
+This database uses the Berkelee DB format.
+Use BDB tools such as
+.Xr db_recover 1
+to attempt a recovery, or move the file away.
+.El
+.Sh SEE ALSO
+.Xr nautilus 1 ,
+.Xr caja 1
+.\" .Sh STANDARDS
+.Sh HISTORY
+.
+This idea is based on Finder from MacOS 9 but most heavily inspired by Nautilus
+from GNOME 2.
+.
+.Sh AUTHORS
+.An -split
+.An "Mike Burns" Aq Mt mike@mike-burns.com
+.An "Matt Horan" Aq Mt matt@matthoran.com
+.\" .Sh CAVEATS
+.\" .Sh BUGS

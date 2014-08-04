@@ -12,5 +12,5 @@ AX_PATH_BDB([4],[
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([GMODULE], [gmodule-2.0])
 PKG_CHECK_MODULES([GIO], [gio-2.0])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile man/Makefile])
 AC_OUTPUT
