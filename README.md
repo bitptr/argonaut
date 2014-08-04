@@ -19,24 +19,14 @@ Things that make it spatial:
   combined with virtual desktops the most straightforward way to think about
   the desired functionality is: the existing window closes and a new one opens.
 
-Setup
------
+Dependencies
+------------
 
-Depends on GTK+ 3, GModule 2, GIO 2, and BDB.
+Depends on GTK+ 3, GModule 2, GIO 2, and BDB 4+.
 
-To develop:
+On OpenBSD: gtk+3, db
 
-  ./autogen.sh
-  ./configure --datadir=$PWD
-  make
-
-You may need to set your `CFLAGS` and `LDFLAGS`. These are the recommended
-settings for OpenBSD:
-
-    export AUTOMAKE_VERSION=1.14
-    export AUTOCONF_VERSION=2.69
-    export CFLAGS="-I /usr/local/include/db4"
-    export LDFLAGS="-L /usr/local/lib/db4"
+On Debian: libgtk-3-dev, libdb-dev
 
 Copyright
 ---------
