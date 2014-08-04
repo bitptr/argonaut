@@ -11,6 +11,8 @@
 
 #include "extern.h"
 
+#include <stdio.h> /* XXX for debugging */
+
 /*
  * Open a new argonaut on the specified directory.
  */
@@ -25,7 +27,7 @@ open_directory(struct cb_data *user_data, gchar *fullpath)
 		warn("could not open directory");
 		break;
 	case 0:
-		execl(user_data->prog_path, user_data->argv0, fullpath, NULL);
+		execlp(user_data->argv0, user_data->argv0, fullpath, NULL);
 		/* NOTREACHED */
 		break;
 	default:
