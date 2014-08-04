@@ -46,8 +46,8 @@ See the dependencies in the `README.md`.
 To build from a fresh checkout:
 
     ./autogen.sh
-    ./configure --datadir=$PWD
-    make
+    ./configure
+    make pkgdatadir=$PWD
 
 You may need to set your `CFLAGS` and `LDFLAGS`. These are the recommended
 settings for OpenBSD:
