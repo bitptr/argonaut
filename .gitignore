@@ -20,3 +20,4 @@ config.log
 config.status
 configure
 depcomp
+argonaut-*.tar.gz
