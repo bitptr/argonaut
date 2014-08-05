@@ -1,5 +1,3 @@
-/* vim: set sw=0 ts=8 cinoptions=:0,t0,+4,(4: */
-
 #ifndef COMPAT_H
 #define COMPAT_H
 
