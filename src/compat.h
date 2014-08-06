@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifndef COMPAT_H
 #define COMPAT_H
 
@@ -14,6 +18,7 @@
 #endif /* __linux__ || __CYGWIN__ */
 
 #ifndef HAVE_STRLCPY
+#include <sys/types.h>
 size_t	strlcpy(char *, const char *, size_t);
 #endif /* HAVE_STRLCPY */
 

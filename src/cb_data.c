@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <gtk/gtk.h>
+
 #include "compat.h"
 #include "extern.h"
 
@@ -20,22 +22,41 @@ cb_data_new(char *argv0)
 	struct cb_data	*d;
 	size_t		 len, cpy_len;
 
-        if ((d = (struct cb_data*)malloc(sizeof(struct cb_data))) == NULL)
-		goto error;
+        if ((d = (struct cb_data*)malloc(sizeof(struct cb_data))) == NULL) {
+		cb_data_free(d);
+		return NULL;
+	}
 
 	len = strlen(argv0);
-        if ((d->argv0 = calloc(len+1, sizeof(char))) == NULL)
-		goto error;
+        if ((d->argv0 = calloc(len+1, sizeof(char))) == NULL) {
+		cb_data_free(d);
+		return NULL;
+	}
 	cpy_len = strlcpy(d->argv0, argv0, len+1);
-        if (cpy_len < len)
-		goto error;
+        if (cpy_len < len) {
+		cb_data_free(d);
+		return NULL;
+	}
+
+	d->icon_view = NULL;
+	d->tree_path = NULL;
 
 	return d;
+}
 
-error:
-	free(d->argv0);
-	free(d);
-	return NULL;
+int
+cb_data_add_dir(struct cb_data *d, char *dir)
+{
+	int	cpy_len, len;
+
+	len = strlen(dir);
+	if ((d->dir = calloc(len+1, sizeof(char))) == NULL)
+		return -1;
+	cpy_len = strlcpy(d->dir, dir, len+1);
+	if (cpy_len < len)
+		return -2;
+
+	return 0;
 }
 
 /*
@@ -44,7 +65,12 @@ error:
 void
 cb_data_free(struct cb_data *d)
 {
-        free(d->argv0);
-        free(d);
+	/*
+	 * Do not free icon_view: this is managed by GTK.
+	 * Do not free tree_path: this is only created in dnd_drag_motion and
+	 * freed in dnd_drag_leave.
+	 */
+	free(d->dir);
+	free(d->argv0);
+	free(d);
 }
-
