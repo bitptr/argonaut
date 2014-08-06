@@ -224,15 +224,18 @@ gboolean
 persist_geometry(GtkWidget *widget, GdkEvent *event, char *dir)
 {
 	DBT		 key, value;
-	int		 ret;
+	int		 ret, x, y;
 	DB		*db;
 	struct geometry	 g;
 
 	memset(&key, 0, sizeof(DBT));
 	memset(&value, 0, sizeof(DBT));
 
-	g.x = event->configure.x;
-	g.y = event->configure.y;
+	/* event->configure.y is off by a decoration size, arbitrarily. */
+	gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
+
+	g.x = x;
+	g.y = y;
 	g.h = event->configure.height;
 	g.w = event->configure.width;
 
