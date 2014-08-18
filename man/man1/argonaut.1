@@ -20,7 +20,35 @@ Opening a directory from within
 will open that directory in its own window, as if you ran
 .Nm
 passing the new directory as an argument.
-.\" TODO: middle click
+.Ss Keyboard Shortcuts
+In the following descriptions, ^X means control-X.
+.Bl -tag -width XXXX
+.It Ic ENTER
+Open the file or directory.
+Directores open in
+.Nm argonaut .
+.It Ic ^W
+Close the current working directory.
+.El
+.
+.Ss Mouse Shortcuts
+.Bl -tag -width XXXX
+.It left click on icon
+Select the icon.
+.It left double click on icon
+Open the file or directory.
+Directores open in
+.Nm argonaut .
+.It left click on empty area
+Deselect all icons.
+.It left click and drag
+Select all icons within drag rectangle.
+.It middle click on icon
+Open the file or directory; directores open in
+.Nm argonaut .
+Once the new file or directory is open, the current working directory will
+close.
+.El
 .
 .Sh ENVIRONMENT
 .
