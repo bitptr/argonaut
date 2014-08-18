@@ -15,9 +15,10 @@
 
 #include "compat.h"
 #include "dnd.h"
+#include "state.h"
 #include "extern.h"
 
-static char	*determine_target(struct cb_data *, gint, gint);
+static char	*determine_target(struct state *, gint, gint);
 static int	 copy_or_move(GFile *, char *);
 static int	 find_mountpoint(GFile *);
 static int	 copy_file(GFile *, GFile *, char *);
@@ -27,8 +28,8 @@ static int	 copy_file(GFile *, GFile *, char *);
  * a URI, which we then operate on.
  */
 void
-dnd_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x,
-    gint y, GtkSelectionData *data, guint info, guint time, struct cb_data *d)
+on_icons_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x,
+    gint y, GtkSelectionData *data, guint info, guint time, struct state *d)
 {
 	gchar	*uri;
 	char	*target;
@@ -63,8 +64,8 @@ dnd_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x,
  * icon grid.
  */
 gboolean
-dnd_drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
-    guint time, struct cb_data *d)
+on_icons_drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
+    guint time, struct state *d)
 {
 	GtkTreeModel	*model;
 	GtkTreeIter	 iter;
@@ -99,8 +100,8 @@ dnd_drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
  * Unhighlight and free any memory.
  */
 void
-dnd_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time,
-    struct cb_data *d)
+on_icons_data_leave(GtkWidget *widget, GdkDragContext *context, guint time,
+    struct state *d)
 {
 	if (d->tree_path != NULL)
 		gtk_icon_view_unselect_path(d->icon_view, d->tree_path);
@@ -117,7 +118,7 @@ dnd_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time,
  * otherwise, the current working directory is the target.
  */
 char *
-determine_target(struct cb_data *d, gint x, gint y)
+determine_target(struct state *d, gint x, gint y)
 {
 	GtkTreeModel	*model;
 	GtkTreeIter	 iter;

@@ -10,31 +10,31 @@
 #include <gtk/gtk.h>
 
 #include "compat.h"
-#include "extern.h"
+#include "state.h"
 
 /*
  * Build the initial data for the program. This data is passed to all
  * callbacks.
  */
-struct cb_data *
-cb_data_new(char *argv0)
+struct state *
+state_new(char *argv0)
 {
-	struct cb_data	*d;
+	struct state	*d;
 	size_t		 len, cpy_len;
 
-        if ((d = (struct cb_data*)malloc(sizeof(struct cb_data))) == NULL) {
-		cb_data_free(d);
+        if ((d = (struct state*)malloc(sizeof(struct state))) == NULL) {
+		state_free(d);
 		return NULL;
 	}
 
 	len = strlen(argv0);
         if ((d->argv0 = calloc(len+1, sizeof(char))) == NULL) {
-		cb_data_free(d);
+		state_free(d);
 		return NULL;
 	}
 	cpy_len = strlcpy(d->argv0, argv0, len+1);
         if (cpy_len < len) {
-		cb_data_free(d);
+		state_free(d);
 		return NULL;
 	}
 
@@ -45,7 +45,7 @@ cb_data_new(char *argv0)
 }
 
 int
-cb_data_add_dir(struct cb_data *d, char *dir)
+state_add_dir(struct state *d, char *dir)
 {
 	int	cpy_len, len;
 
@@ -60,10 +60,10 @@ cb_data_add_dir(struct cb_data *d, char *dir)
 }
 
 /*
- * Clean up the cb_data struct.
+ * Clean up the state struct.
  */
 void
-cb_data_free(struct cb_data *d)
+state_free(struct state *d)
 {
 	/*
 	 * Do not free icon_view: this is managed by GTK.

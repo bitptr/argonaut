@@ -17,21 +17,22 @@
 #include <gtk/gtk.h>
 
 #include "compat.h"
+#include "callbacks.h"
 #include "dnd.h"
 #include "extern.h"
+#include "state.h"
 #include "main.h"
 #include "pathnames.h"
+#include "window.h"
 
 extern int errno;
 
-int		 populate(GtkListStore *, char*);
-void		 store_insert(GtkListStore *, struct dirent *, char *);
-GtkWidget	*prepare_window(char *, struct geometry *, struct cb_data *);
-__dead void	 usage();
-char		*getdir(int, char **);
-void		 getgeometry(char *dir, struct geometry *);
-gboolean	 persist_geometry(GtkWidget *, GdkEvent  *, char *);
-gchar		*find_argonautinfo();
+static int		 populate(GtkListStore *, char*);
+static void		 store_insert(GtkListStore *, struct dirent *, char *);
+static GtkWidget	*prepare_window(char *, struct geometry *, struct state *);
+__dead void	 	 usage();
+static char		*getdir(int, char **);
+static void		 getgeometry(char *dir, struct geometry *);
 
 /*
  * A spatial file manager. Treat directories as independent resources with
@@ -43,10 +44,10 @@ main(int argc, char *argv[])
 {
 	struct geometry	*geometry;
 	GtkWidget	*window;
-        struct cb_data	*d;
+        struct state	*d;
 	char		*dir, ch;
 
-	if ((d = cb_data_new(argv[0])) == NULL)
+	if ((d = state_new(argv[0])) == NULL)
 		err(1, "could not build the callback data");
 
 
@@ -62,8 +63,8 @@ main(int argc, char *argv[])
 	argv += optind;
 
 	dir = getdir(argc, argv);
-	if (cb_data_add_dir(d, dir) < 0)
-		err(1, "cb_data_add_dir");
+	if (state_add_dir(d, dir) < 0)
+		err(1, "state_add_dir");
 
 	if ((geometry = malloc(sizeof(struct geometry))) == NULL)
 		err(1, "malloc");
@@ -74,7 +75,7 @@ main(int argc, char *argv[])
 	gtk_widget_show(window);
 	gtk_main();
 
-	cb_data_free(d);
+	state_free(d);
 
 	return 0;
 }
@@ -95,7 +96,7 @@ usage()
  * Pick the right starting directory. First try the name passed on the
  * command-line, then $HOME, and finally fall back to / .
  */
-char *
+static char *
 getdir(int argc, char *argv[])
 {
 	GFile		*g_dir;
@@ -125,25 +126,10 @@ getdir(int argc, char *argv[])
 }
 
 /*
- * Find .argonautinfo. First look in $HOME, then fall back to /.
- */
-gchar *
-find_argonautinfo()
-{
-	gchar	*home;
-
-	home = getenv("HOME");
-	if (home)
-		return g_strjoin("/", home, ".argonautinfo", NULL);
-	else
-		return "/.argonautinfo";
-}
-
-/*
  * Look up the geometry for the directory, storing it in the `geometry'
  * pointer.
  */
-void
+static void
 getgeometry(char *dir, struct geometry *geometry)
 {
 	struct geometry  g;
@@ -185,20 +171,20 @@ getgeometry(char *dir, struct geometry *geometry)
  * Set up the window: build the interface, connect the signals, insert the
  * file icons.
  */
-GtkWidget *
-prepare_window(char *dir, struct geometry *geometry, struct cb_data *d)
+static GtkWidget *
+prepare_window(char *dir, struct geometry *geometry, struct state *d)
 {
 	GtkBuilder	*builder;
-	GtkWidget	*icons, *window;
+	GtkWidget	*icons, *window, *directory_close;
 	GtkListStore	*model;
 
 	builder = gtk_builder_new_from_file(INTERFACE_PATH);
-	window = GTK_WIDGET(gtk_builder_get_object(builder, "directory-window"));
-	icons = GTK_WIDGET(gtk_builder_get_object(builder, "file-icons"));
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	icons = GTK_WIDGET(gtk_builder_get_object(builder, "icons"));
+	directory_close = GTK_WIDGET(gtk_builder_get_object(builder, "directory-close-menu-item"));
 
 	d->icon_view = GTK_ICON_VIEW(icons);
 
-	gtk_builder_connect_signals(builder, d);
 	g_object_unref(builder);
 
 	gtk_window_set_default_size(GTK_WINDOW(window), geometry->w,
@@ -218,64 +204,22 @@ prepare_window(char *dir, struct geometry *geometry, struct cb_data *d)
 	    GDK_ACTION_COPY);
 	gtk_drag_dest_add_text_targets(icons);
 	gtk_drag_dest_add_uri_targets(icons);
-	g_signal_connect(icons, "drag-motion", G_CALLBACK(dnd_drag_motion), d);
-	g_signal_connect(icons, "drag-leave", G_CALLBACK(dnd_drag_leave), d);
-	g_signal_connect(icons, "drag-data-received", G_CALLBACK(dnd_drag_data_received), d);
 
+	g_signal_connect(icons, "drag-motion", G_CALLBACK(on_icons_drag_motion), d);
+	g_signal_connect(icons, "drag-leave", G_CALLBACK(on_icons_data_leave), d);
+	g_signal_connect(icons, "drag-data-received", G_CALLBACK(on_icons_drag_data_received), d);
+	g_signal_connect(icons, "item-activated", G_CALLBACK(on_icons_item_activated), d);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-	g_signal_connect(window, "configure-event", G_CALLBACK(persist_geometry),
-	    dir);
+	g_signal_connect(window, "configure-event", G_CALLBACK(on_window_configure_event), dir);
+	g_signal_connect(directory_close, "activate", G_CALLBACK(gtk_main_quit), NULL);
 
 	return window;
 }
 
 /*
- * Save the window size and position.
- */
-gboolean
-persist_geometry(GtkWidget *widget, GdkEvent *event, char *dir)
-{
-	DBT		 key, value;
-	int		 ret, x, y;
-	DB		*db;
-	struct geometry	 g;
-
-	memset(&key, 0, sizeof(DBT));
-	memset(&value, 0, sizeof(DBT));
-
-	/* event->configure.y is off by a decoration size, arbitrarily. */
-	gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
-
-	g.x = x;
-	g.y = y;
-	g.h = event->configure.height;
-	g.w = event->configure.width;
-
-	key.data = dir;
-	key.size = strlen(dir)+1;
-	value.data = &g;
-	value.size = sizeof(struct geometry);
-
-	if (db_create(&db, NULL, 0) < 0)
-		err(1, "could not open the db");
-
-	if (db->open(db, NULL, find_argonautinfo(), NULL,
-		    DB_HASH, DB_CREATE, 0) < 0)
-		err(1, "could not create the db");
-
-	if ((ret = db->put(db, NULL, &key, &value, 0)) != 0)
-		db->err(db, ret, "could not save the geometry");
-
-	if (db != NULL && db->close(db, 0) < 0)
-		warn("could not close the db");
-
-	return FALSE;
-}
-
-/*
  * Add each file in the directory into the model.
  */
-int
+static int
 populate(GtkListStore *model, char *directory)
 {
 	DIR		*dirp;
@@ -295,7 +239,7 @@ populate(GtkListStore *model, char *directory)
 /*
  * Add to the model the file name, directory name, and an icon.
  */
-void
+static void
 store_insert(GtkListStore *model, struct dirent *dp, char *directory)
 {
 	GdkPixbuf	*dir_pixbuf, *file_pixbuf;

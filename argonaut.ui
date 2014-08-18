@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
-  <object class="GtkWindow" id="directory-window">
+  <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="box2">
@@ -91,7 +91,6 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_directory_close" swapped="no"/>
                         <accelerator key="w" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -274,14 +273,13 @@
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <child>
-              <object class="GtkIconView" id="file-icons">
+              <object class="GtkIconView" id="icons">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin">0</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="selection_mode">multiple</property>
-		<signal name="item-activated" handler="on_item_activated" swapped="no"/>
               </object>
             </child>
           </object>

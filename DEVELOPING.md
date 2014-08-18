@@ -38,6 +38,18 @@ and those like us.
 extra libraries, but we should first use and practice what we have in our OS.
 This helps keep the code focused and accessible.
 
+Conventions
+-----------
+
+*Name callbacks* after their signal and GtkBuilder id, prefixed with `on_`.
+
+For example, the object id is `window` and the signal is `configure-event`;
+therefore the callback function is named `on_window_configure_event`:
+
+	w = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	g_signal_connect(w, "configure-event",
+            G_CALLBACK(on_window_configure_event), NULL);
+
 Setup
 -----
 

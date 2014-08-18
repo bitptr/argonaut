@@ -22,7 +22,7 @@ Things that make it spatial:
 Dependencies
 ------------
 
-Depends on GTK+ 3, GModule 2, GIO 2, and BDB 4+.
+Depends on GTK+ 3, GIO 2, and BDB 4+.
 
 On OpenBSD: gtk+3, db
 

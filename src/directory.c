@@ -7,15 +7,13 @@
 
 #include <gtk/gtk.h>
 
-#include "extern.h"
-
-#include <stdio.h> /* XXX for debugging */
+#include "state.h"
 
 /*
  * Open a new argonaut on the specified directory.
  */
 void
-open_directory(struct cb_data *user_data, gchar *fullpath)
+open_directory(struct state *user_data, gchar *fullpath)
 {
 	pid_t	pid;
 

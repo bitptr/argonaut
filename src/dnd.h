@@ -4,12 +4,12 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-#include "extern.h"
+#include "state.h"
 
-void		dnd_drag_data_received(GtkWidget *, GdkDragContext *, gint, gint,
-    GtkSelectionData *, guint, guint, struct cb_data *);
-gboolean 	dnd_drag_motion(GtkWidget *, GdkDragContext *, gint, gint,
-    guint, struct cb_data *);
-void		dnd_drag_leave(GtkWidget *, GdkDragContext *, guint,
-    struct cb_data *);
-#endif
+void		on_icons_drag_data_received(GtkWidget *, GdkDragContext *,
+    gint, gint, GtkSelectionData *, guint, guint, struct state *);
+gboolean	on_icons_drag_motion(GtkWidget *, GdkDragContext *, gint, gint,
+    guint, struct state *);
+void		on_icons_data_leave(GtkWidget *, GdkDragContext *, guint,
+    struct state *);
+#endif /* DND_H */

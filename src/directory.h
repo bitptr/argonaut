@@ -3,8 +3,7 @@
 
 #include <gtk/gtk.h>
 
-#include "extern.h"
+#include "state.h"
 
-void	open_directory(struct cb_data *, gchar *);
-
+void	open_directory(struct state *, gchar *);
 #endif /* DIRECTORY_H */

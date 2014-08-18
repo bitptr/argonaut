@@ -3,30 +3,23 @@
 #endif
 
 #include <dirent.h>
+#include <db.h>
 #include <err.h>
+#include <string.h>
 
 #include <gtk/gtk.h>
 
 #include "directory.h"
 #include "extern.h"
-
-void	on_directory_close(GtkMenuItem *, gpointer);
-void	on_item_activated(GtkIconView *, GtkTreePath *, struct cb_data *);
-
-/*
- * Closing the directory is the same as quitting the program.
- */
-void
-on_directory_close(GtkMenuItem *menuitem, gpointer user_data)
-{
-	gtk_main_quit();
-}
+#include "main.h"
+#include "window.h"
+#include "state.h"
 
 /*
  * Open the file using guesses from XDG.
  */
 void
-on_item_activated(GtkIconView *iconview, GtkTreePath *path, struct cb_data *user_data)
+on_icons_item_activated(GtkIconView *iconview, GtkTreePath *path, struct state *user_data)
 {
 	gchar		*directory, *fullpath, *name;
 	GdkScreen	*screen;
@@ -67,4 +60,47 @@ on_item_activated(GtkIconView *iconview, GtkTreePath *path, struct cb_data *user
 	g_free(name);
 	g_free(directory);
 	g_free(fullpath);
+}
+
+/*
+ * Save the window size and position.
+ */
+gboolean
+on_window_configure_event(GtkWidget *widget, GdkEvent *event, char *dir)
+{
+	DBT		 key, value;
+	int		 ret, x, y;
+	DB		*db;
+	struct geometry	 g;
+
+	memset(&key, 0, sizeof(DBT));
+	memset(&value, 0, sizeof(DBT));
+
+	/* event->configure.y is off by a decoration size, arbitrarily. */
+	gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
+
+	g.x = x;
+	g.y = y;
+	g.h = event->configure.height;
+	g.w = event->configure.width;
+
+	key.data = dir;
+	key.size = strlen(dir)+1;
+	value.data = &g;
+	value.size = sizeof(struct geometry);
+
+	if (db_create(&db, NULL, 0) < 0)
+		err(1, "could not open the db");
+
+	if (db->open(db, NULL, find_argonautinfo(), NULL,
+		    DB_HASH, DB_CREATE, 0) < 0)
+		err(1, "could not create the db");
+
+	if ((ret = db->put(db, NULL, &key, &value, 0)) != 0)
+		db->err(db, ret, "could not save the geometry");
+
+	if (db != NULL && db->close(db, 0) < 0)
+		warn("could not close the db");
+
+	return FALSE;
 }
