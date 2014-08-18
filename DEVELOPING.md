@@ -68,3 +68,12 @@ settings for OpenBSD:
     export AUTOCONF_VERSION=2.69
     export CFLAGS="-I /usr/local/include/db4"
     export LDFLAGS="-L /usr/local/lib/db4"
+
+The Desktop Entry Specification is installed into `$DATADIR/applications`. If
+`$DATADIR` is not one of the system data directories or user data directories,
+it will not be picked up by your system menu application. To remedy this, set
+`XDG_DATA_HOME`[XDG_DATA_HOME]. For example:
+
+    env XDG_DATA_HOME=$HOME/.localest/share fbpanel &
+
+[XDG_DATA_HOME]: http://standards.freedesktop.org/basedir-spec/latest/ar01s03.html

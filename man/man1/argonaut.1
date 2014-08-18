@@ -20,12 +20,21 @@ Opening a directory from within
 will open that directory in its own window, as if you ran
 .Nm
 passing the new directory as an argument.
+.\" TODO: middle click
 .
 .Sh ENVIRONMENT
 .
-This program makes use of the GTK+ library, which in turn supports many environment variables.
-Since we do not control these environment variables we instead suggest you look in 
-.Lk https://developer.gnome.org/gtk3/stable/gtk-running.html the GTK documentation
+This program makes use of the GTK+ library, which in turn supports many
+environment variables.  Since we do not control these environment variables we
+instead suggest you look in the
+.Lk https://developer.gnome.org/gtk3/stable/gtk-running.html GTK documentation .
+.
+.Pp
+The
+.Li .desktop
+file that is installed takes advantage of the XDG environment variables, which
+you can read more about in the
+.Lk http://standards.freedesktop.org/basedir-spec/latest/ar01s03.html XDG Base Directory Specification .
 .
 .Sh FILES
 .
@@ -71,7 +80,19 @@ to attempt a recovery, or move the file away.
 .Sh SEE ALSO
 .Xr nautilus 1 ,
 .Xr caja 1
-.\" .Sh STANDARDS
+.Sh STANDARDS
+This implements the
+.Lk http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-1.1.html Desktop Entry Specification 1.1
+with categories from the
+.Lk http://standards.freedesktop.org/menu-spec/menu-spec-1.1.html Desktop Menu Specification 1.1 .
+.\" http://standards.freedesktop.org/thumbnail-spec/
+.\" http://standards.freedesktop.org/startup-notification-spec/
+.\" http://standards.freedesktop.org/shared-mime-info-spec/
+.\" http://standards.freedesktop.org/mime-apps-spec/
+.\" http://standards.freedesktop.org/icon-theme-spec/
+.\" http://standards.freedesktop.org/icon-naming-spec/
+.\" http://standards.freedesktop.org/basedir-spec/ ?
+.\" http://standards.freedesktop.org/autostart-spec/
 .Sh HISTORY
 .
 This idea is based on Finder from MacOS 9 but most heavily inspired by Nautilus

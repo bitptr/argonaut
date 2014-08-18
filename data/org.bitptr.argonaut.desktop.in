@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=argonaut
+GenericName=File Manager
+Comment=Spatially browse your file system
+Exec=@bindir@/argonaut %f
+Terminal=false
+Type=Application
+StartupNotify=false
+DBusActivatable=false
+Categories=GTK;Utility;System;FileManager;Filesystem;FileTools;
+Keywords=file;directory;explore;manager;filesystem;
+MimeType=inode/directory;
+Version=1.0

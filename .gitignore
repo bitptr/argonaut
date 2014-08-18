@@ -21,3 +21,4 @@ config.status
 configure
 depcomp
 argonaut-*.tar.gz
+data/org.bitptr.argonaut.desktop
