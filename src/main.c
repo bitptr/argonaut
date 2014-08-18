@@ -21,6 +21,7 @@
 #include "dnd.h"
 #include "extern.h"
 #include "state.h"
+#include "file.h"
 #include "main.h"
 #include "pathnames.h"
 #include "window.h"
@@ -212,6 +213,7 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect(window, "configure-event", G_CALLBACK(on_window_configure_event), dir);
 	g_signal_connect(directory_close, "activate", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(icons, "button-press-event", G_CALLBACK(on_icons_button_press_event), d);
 
 	return window;
 }

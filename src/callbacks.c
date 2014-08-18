@@ -14,6 +14,7 @@
 #include "main.h"
 #include "window.h"
 #include "state.h"
+#include "file.h"
 
 /*
  * Open the file using guesses from XDG.
@@ -21,45 +22,7 @@
 void
 on_icons_item_activated(GtkIconView *iconview, GtkTreePath *path, struct state *user_data)
 {
-	gchar		*directory, *fullpath, *name;
-	GdkScreen	*screen;
-	GtkTreeModel	*model;
-	GtkTreeIter	 iter;
-	gint		 type;
-	GError		*error;
-	
-	error = NULL;
-        
-	if ((model = gtk_icon_view_get_model(iconview)) == NULL)
-		errx(66, "could not find the model for the icon view");
-
-	gtk_tree_model_get_iter(
-	    GTK_TREE_MODEL(model),
-	    &iter,
-	    path);
-
-	gtk_tree_model_get(
-	    GTK_TREE_MODEL(model),
-	    &iter,
-	    FILE_NAME, &name,
-	    FILE_PARENT, &directory,
-	    FILE_TYPE, &type,
-	    -1);
-
-	fullpath = g_strdup_printf("file://%s/%s", directory, name);
-
-	if (type == DT_DIR) {
-		open_directory(user_data, fullpath);
-	} else {
-		screen = gdk_screen_get_default();
-		gtk_show_uri(screen, fullpath, GDK_CURRENT_TIME, &error);
-		if (error)
-			g_print("%s\n", error->message);
-	}
-
-	g_free(name);
-	g_free(directory);
-	g_free(fullpath);
+	activate(iconview, path, user_data);
 }
 
 /*
@@ -101,6 +64,41 @@ on_window_configure_event(GtkWidget *widget, GdkEvent *event, char *dir)
 
 	if (db != NULL && db->close(db, 0) < 0)
 		warn("could not close the db");
+
+	return FALSE;
+}
+
+gboolean
+on_icons_button_press_event(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	GdkEventButton	*e;
+        struct state	*d;
+	GtkTreePath	*tree_path;
+
+	e = NULL;
+	d = (struct state *)user_data;
+	tree_path = NULL;
+
+	if (event->type == GDK_BUTTON_PRESS)
+		e = (GdkEventButton *)event;
+	else
+		goto error;
+
+	if (e->button != 2)
+		goto error;
+
+	if (!gtk_icon_view_get_dest_item_at_pos(d->icon_view, e->x, e->y,
+		    &tree_path, NULL))
+		goto error;
+
+	activate(d->icon_view, tree_path, d);
+	gtk_main_quit();
+	return FALSE;
+
+error:
+
+	if (tree_path != NULL)
+		g_object_unref(tree_path);
 
 	return FALSE;
 }
