@@ -2,11 +2,13 @@
 #include <config.h>
 #endif
 
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <dirent.h>
 #include <db.h>
 #include <err.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -25,6 +27,7 @@
 #include "main.h"
 #include "pathnames.h"
 #include "window.h"
+#include "thumbnail.h"
 
 extern int errno;
 
@@ -244,33 +247,15 @@ populate(GtkListStore *model, char *directory)
 static void
 store_insert(GtkListStore *model, struct dirent *dp, char *directory)
 {
-	GdkPixbuf	*dir_pixbuf, *file_pixbuf;
-	GtkIconTheme	*icon_theme;
+	GdkPixbuf	*pixbuf;
 	GtkTreeIter	 iter;
 
-	icon_theme = gtk_icon_theme_get_default();
-	file_pixbuf = gtk_icon_theme_load_icon(
-	    icon_theme,
-	    "text-x-generic", /* icon name */
-	    32, /* icon size */
-	    0,  /* flags */
-	    NULL);
-	if (!file_pixbuf)
-		errx(66, "could not load the file pixbuf");
-
-	dir_pixbuf = gtk_icon_theme_load_icon(
-	    icon_theme,
-	    "folder",
-	    32,
-	    0,
-	    NULL);
-	if (!dir_pixbuf)
-		errx(66, "could not load the directory pixbuf");
+	pixbuf = find_thumbnail(dp, directory);
 
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 	    FILE_NAME, dp->d_name,
-	    FILE_ICON, GDK_PIXBUF(dp->d_type == DT_DIR ? dir_pixbuf : file_pixbuf),
+	    FILE_ICON, pixbuf,
 	    FILE_PARENT, directory,
 	    FILE_TYPE, dp->d_type,
 	    -1);
