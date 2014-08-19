@@ -16,6 +16,8 @@
 #include "state.h"
 #include "file.h"
 
+static gboolean	on_middle_click(GtkWidget *, GdkEvent *, gpointer);
+
 /*
  * Open the file using guesses from XDG.
  */
@@ -68,8 +70,32 @@ on_window_configure_event(GtkWidget *widget, GdkEvent *event, char *dir)
 	return FALSE;
 }
 
+/*
+ * If the user middle-clicks, activate the icon; if that works, quit.
+ */
 gboolean
 on_icons_button_press_event(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	if (on_middle_click(widget, event, user_data))
+		gtk_main_quit();
+	return FALSE;
+}
+
+/*
+ * If the user middle-clicks, activate the icon.
+ */
+gboolean
+on_desktop_icon_button_press_event(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	on_middle_click(widget, event, user_data);
+	return FALSE;
+}
+
+/*
+ * Return TRUE on activate, FALSE otherwise.
+ */
+static gboolean
+on_middle_click(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
 	GdkEventButton	*e;
         struct state	*d;
@@ -91,9 +117,11 @@ on_icons_button_press_event(GtkWidget *widget, GdkEvent *event, gpointer user_da
 		    &tree_path, NULL))
 		goto error;
 
+	gtk_icon_view_unselect_all(d->icon_view);
+	gtk_icon_view_select_path(d->icon_view, tree_path);
+
 	activate(d->icon_view, tree_path, d);
-	gtk_main_quit();
-	return FALSE;
+	return TRUE;
 
 error:
 

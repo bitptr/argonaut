@@ -2,6 +2,15 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
+  <object class="GtkIconView" id="desktop-icons">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+    <property name="margin">0</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="selection_mode">multiple</property>
+  </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
     <child>

@@ -1,4 +1,5 @@
 argonaut
+argonaut-desktop
 *core
 *.o
 *.swp

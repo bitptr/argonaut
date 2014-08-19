@@ -21,6 +21,7 @@ open_directory(struct state *user_data, gchar *fullpath)
 	case 0:
 		execlp(user_data->argv0, user_data->argv0, fullpath, NULL);
 		/* NOTREACHED */
+		err(1, "execlp");
 		break;
 	default:
 		break;

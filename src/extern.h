@@ -5,7 +5,8 @@ enum model_storage {
 	FILE_NAME,
 	FILE_ICON,
 	FILE_PARENT,
-	FILE_TYPE
+	FILE_TYPE,
+	MODEL_CNT
 };
 
 #endif /* EXTERN_H */

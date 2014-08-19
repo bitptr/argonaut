@@ -50,6 +50,17 @@ Once the new file or directory is open, the current working directory will
 close.
 .El
 .
+.Ss Desktop Color
+.
+Set the desktop color in your
+.Pa $HOME/.config/gtk-3.0/gtk.css .
+The selector to access the desktop is
+.Li #argonaut-desktop .
+See
+.Sx EXAMPLES
+for more details.
+.
+.
 .Sh ENVIRONMENT
 .
 This program makes use of the GTK+ library, which in turn supports many
@@ -88,6 +99,11 @@ Passing a directory name as an argument will open that directory:
 Directories can be relative:
 .Pp
 .Dl argonaut bin/
+.Pp
+To set the background color to light slate gray, edit
+.Pa $HOME/.config/gtk-3.0/gtk.css :
+.Pp
+.Dl #argonaut-desktop { background-color: lightslategray; }
 .
 .Sh DIAGNOSTICS
 .Bl -diag

@@ -23,17 +23,16 @@
 #include "callbacks.h"
 #include "dnd.h"
 #include "extern.h"
-#include "state.h"
 #include "file.h"
 #include "main.h"
 #include "pathnames.h"
 #include "window.h"
+#include "state.h"
+#include "store.h"
 #include "thumbnail.h"
 
 extern int errno;
 
-static int		 populate(GtkListStore *, char*);
-static void		 store_insert(GtkListStore *, struct dirent *, char *);
 static GtkWidget	*prepare_window(char *, struct geometry *, struct state *);
 __dead void	 	 usage();
 static char		*getdir(int, char **);
@@ -202,8 +201,8 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	gtk_window_move(GTK_WINDOW(window), geometry->x, geometry->y);
 	gtk_window_set_title(GTK_WINDOW(window), dir);
 
-	model = gtk_list_store_new(4, G_TYPE_STRING, GDK_TYPE_PIXBUF,
-	    G_TYPE_STRING, G_TYPE_INT);
+	model = gtk_list_store_new(MODEL_CNT,
+	    G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_INT);
 	if (populate(model, dir) == -1)
 		err(66, "failed to populate icon model from %s", dir);
 
@@ -226,44 +225,4 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	g_signal_connect(icons, "button-press-event", G_CALLBACK(on_icons_button_press_event), d);
 
 	return window;
-}
-
-/*
- * Add each file in the directory into the model.
- */
-static int
-populate(GtkListStore *model, char *directory)
-{
-	DIR		*dirp;
-	struct dirent	*dp;
-
-	dirp = opendir(directory);
-	if (dirp) {
-		while ((dp = readdir(dirp)) != NULL)
-			if (dp->d_name[0] != '.')
-				store_insert(model, dp, directory);
-		return closedir(dirp);
-	}
-
-	return -1;
-}
-
-/*
- * Add to the model the file name, directory name, and an icon.
- */
-static void
-store_insert(GtkListStore *model, struct dirent *dp, char *directory)
-{
-	GdkPixbuf	*pixbuf;
-	GtkTreeIter	 iter;
-
-	pixbuf = find_thumbnail(dp, directory);
-
-	gtk_list_store_append(model, &iter);
-	gtk_list_store_set(model, &iter,
-	    FILE_NAME, dp->d_name,
-	    FILE_ICON, pixbuf,
-	    FILE_PARENT, directory,
-	    FILE_TYPE, dp->d_type,
-	    -1);
 }

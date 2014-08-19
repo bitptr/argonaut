@@ -59,7 +59,7 @@ To build from a fresh checkout:
 
     ./autogen.sh
     ./configure
-    make pkgdatadir=$PWD
+    make pkgdatadir=$PWD bindir=$PWD/src
 
 You may need to set your `CFLAGS` and `LDFLAGS`. These are the recommended
 settings for OpenBSD:
