@@ -40,6 +40,7 @@ state_new(char *argv0)
 
 	d->icon_view = NULL;
 	d->tree_path = NULL;
+	d->dir = NULL;
 
 	return d;
 }

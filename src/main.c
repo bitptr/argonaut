@@ -17,6 +17,7 @@
 
 #include <gio/gio.h>
 #include <gtk/gtk.h>
+#include <libwnck/libwnck.h>
 
 #include "compat.h"
 #include "callbacks.h"
@@ -48,12 +49,12 @@ main(int argc, char *argv[])
 {
 	struct geometry	*geometry;
 	GtkWidget	*window;
+	WnckWindow	*w;
         struct state	*d;
 	char		*dir, ch;
 
 	if ((d = state_new(argv[0])) == NULL)
 		err(1, "could not build the callback data");
-
 
 	gtk_init(&argc, &argv);
 
@@ -67,6 +68,10 @@ main(int argc, char *argv[])
 	argv += optind;
 
 	dir = getdir(argc, argv);
+
+	if (((w = window_by_title(dir)) != NULL) && window_activate(w) != -1)
+		goto done;
+
 	if (state_add_dir(d, dir) < 0)
 		err(1, "state_add_dir");
 
@@ -79,6 +84,7 @@ main(int argc, char *argv[])
 	gtk_widget_show(window);
 	gtk_main();
 
+done:
 	state_free(d);
 
 	return 0;
@@ -194,6 +200,7 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	gtk_window_set_default_size(GTK_WINDOW(window), geometry->w,
 	    geometry->h);
 	gtk_window_move(GTK_WINDOW(window), geometry->x, geometry->y);
+	gtk_window_set_title(GTK_WINDOW(window), dir);
 
 	model = gtk_list_store_new(4, G_TYPE_STRING, GDK_TYPE_PIXBUF,
 	    G_TYPE_STRING, G_TYPE_INT);

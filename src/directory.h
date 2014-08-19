@@ -5,5 +5,5 @@
 
 #include "state.h"
 
-void	open_directory(struct state *, gchar *);
+void	 open_directory(struct state *, gchar *);
 #endif /* DIRECTORY_H */

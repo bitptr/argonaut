@@ -52,7 +52,7 @@ find_thumbnail(struct dirent *dp, char *directory)
 /*
  * Try to load the thumbnail for the digest at the given size.
  *
- * RETURNS: a GdkPixbuf* on success, and NULL on failure.
+ * RETURN: a GdkPixbuf* on success, and NULL on failure.
  */
 static GdkPixbuf *
 try_thumbnail(char *digest, char *size)

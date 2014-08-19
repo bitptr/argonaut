@@ -11,6 +11,7 @@ AX_PATH_BDB([4],[
 ])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([GIO], [gio-2.0])
+PKG_CHECK_MODULES([WNCK], [libwnck-3.0])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
