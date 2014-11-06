@@ -3,7 +3,7 @@ AC_INIT([argonaut], [0.1])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
-AC_CHECK_FUNCS([strlcpy])
+AC_CHECK_FUNCS([strlcpy kqueue])
 AX_PATH_BDB([4],[
   LIBS="$BDB_LIBS $LIBS"
   LDFLAGS="$BDB_LDFLAGS $LDFLAGS"

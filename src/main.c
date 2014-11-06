@@ -27,6 +27,7 @@
 #include "main.h"
 #include "pathnames.h"
 #include "window.h"
+#include "watcher.h"
 #include "state.h"
 #include "store.h"
 #include "thumbnail.h"
@@ -205,6 +206,8 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	    G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_INT);
 	if (populate(model, dir) == -1)
 		err(66, "failed to populate icon model from %s", dir);
+
+	watch_dir(model, dir);
 
 	gtk_icon_view_set_text_column(GTK_ICON_VIEW(icons), 0);
 	gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(icons), 1);

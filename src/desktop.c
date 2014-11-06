@@ -19,6 +19,7 @@
 #include "pathnames.h"
 #include "state.h"
 #include "store.h"
+#include "watcher.h"
 
 static void	 set_window_gemetry(GtkWindow *);
 static void	 desktopize(GtkWidget *);
@@ -187,6 +188,8 @@ populated_model(char *dir)
 
 	if (populate(model, dir) == -1)
 		errx(66, "failed to populate icon model from %s", dir);
+
+	watch_dir(model, dir);
 
 	return model;
 }
