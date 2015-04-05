@@ -27,6 +27,7 @@ In the following descriptions, ^X means control-X.
 Open the file or directory.
 Directores open in
 .Nm argonaut .
+Files open using the Desktop Entry Specification.
 .It Ic ^W
 Close the current working directory.
 .El
@@ -148,5 +149,17 @@ from GNOME 2.
 .An -split
 .An "Mike Burns" Aq Mt mike@mike-burns.com
 .An "Matt Horan" Aq Mt matt@matthoran.com
-.\" .Sh CAVEATS
+.Sh CAVEATS
+.
+Some desktop environments may set a default scheme handler for
+.Ic x-scheme-handler/file
+through their file manager.
+Disable it in
+.Pa $HOME/.local/share/applications/mimeapps.list ,
+as in this example for Xfce:
+.Pp
+.Dl [Removed Associations]
+.Dl x-scheme-handler/file=exo-file-manager.desktop
+.Pp
+.
 .\" .Sh BUGS
