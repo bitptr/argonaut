@@ -17,6 +17,7 @@
 #include "file.h"
 
 static gboolean	on_middle_click(GtkWidget *, GdkEvent *, gpointer);
+static void activate_path(gpointer, gpointer);
 
 /*
  * Open the file using guesses from XDG.
@@ -25,6 +26,38 @@ void
 on_icons_item_activated(GtkIconView *iconview, GtkTreePath *path, struct state *user_data)
 {
 	activate(iconview, path, user_data);
+}
+
+/*
+ * Open the selected files using guesses from XDG.
+ */
+void
+on_file_open_menu_item_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	struct state	*d;
+	GList		*items;
+
+	d = (struct state *)user_data;
+	items = gtk_icon_view_get_selected_items(d->icon_view);
+
+	g_list_foreach(items, activate_path, user_data);
+
+	g_list_free_full(items, (GDestroyNotify)gtk_tree_path_free);
+}
+
+/*
+ * Activate the given path in the context of the given user_data.
+ */
+static void
+activate_path(gpointer data, gpointer user_data)
+{
+	GtkTreePath	*path;
+	struct state	*d;
+
+	path = (GtkTreePath *)data;
+	d = (struct state *)user_data;
+
+	activate(d->icon_view, path, d);
 }
 
 /*
@@ -108,14 +141,14 @@ on_middle_click(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	if (event->type == GDK_BUTTON_PRESS)
 		e = (GdkEventButton *)event;
 	else
-		goto error;
+		goto done;
 
 	if (e->button != 2)
-		goto error;
+		goto done;
 
 	if (!gtk_icon_view_get_dest_item_at_pos(d->icon_view, e->x, e->y,
 		    &tree_path, NULL))
-		goto error;
+		goto done;
 
 	gtk_icon_view_unselect_all(d->icon_view);
 	gtk_icon_view_select_path(d->icon_view, tree_path);
@@ -123,7 +156,7 @@ on_middle_click(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	activate(d->icon_view, tree_path, d);
 	return TRUE;
 
-error:
+done:
 
 	if (tree_path != NULL)
 		g_object_unref(tree_path);
