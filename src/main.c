@@ -187,6 +187,9 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	GtkBuilder	*builder;
 	GtkWidget	*icons, *window, *directory_close, *file_open;
 	GtkListStore	*model;
+	GtkTargetEntry	drag_targets[] = {
+		{ "text/uri-list", 0, TARGET_URI_LIST }
+	};
 
 	builder = gtk_builder_new_from_file(INTERFACE_PATH);
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
@@ -214,7 +217,8 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(icons), 1);
 	gtk_icon_view_set_model(GTK_ICON_VIEW(icons), GTK_TREE_MODEL(model));
 	g_object_unref(model);
-	gtk_drag_dest_set(icons, GTK_DEST_DEFAULT_ALL, NULL, 0,
+	gtk_drag_dest_set(icons, GTK_DEST_DEFAULT_ALL,
+	    drag_targets, TARGET_COUNT,
 	    GDK_ACTION_COPY);
 	gtk_drag_dest_add_text_targets(icons);
 	gtk_drag_dest_add_uri_targets(icons);

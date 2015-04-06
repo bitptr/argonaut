@@ -22,6 +22,7 @@ static char	*determine_target(struct state *, gint, gint);
 static int	 copy_or_move(GFile *, char *);
 static int	 find_mountpoint(GFile *);
 static int	 copy_file(GFile *, GFile *, char *);
+static int	 handle_drop(GtkSelectionData *, gint, gint, struct state *);
 
 /*
  * Called when the source program sends the data to us. This data must include
@@ -31,29 +32,9 @@ void
 on_icons_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x,
     gint y, GtkSelectionData *data, guint info, guint time, struct state *d)
 {
-	gchar	*uri;
-	char	*target;
-	GFile	*g_source;
 	int	 should_delete;
 
-	should_delete = 0;
-
-	if (data != NULL && gtk_selection_data_get_length(data) >= 0) {
-		uri = (gchar*)gtk_selection_data_get_data(data);
-		uri[strcspn(uri, "\r")] = '\0';
-		g_source = g_file_new_for_uri(uri);
-
-		target = determine_target(d, x, y);
-
-		if ((should_delete = copy_or_move(g_source, target)) < 0)
-			warnx("failed to copy/move to %s: %i", target,
-			    should_delete);
-
-		free(target);
-
-		g_object_unref(g_source);
-	}
-
+	should_delete = (data != NULL) ?  handle_drop(data, x, y, d) : 0;
 	gtk_drag_finish(context, TRUE, should_delete, time);
 }
 
@@ -109,6 +90,40 @@ on_icons_data_leave(GtkWidget *widget, GdkDragContext *context, guint time,
 
 	gtk_tree_path_free(d->tree_path);
 	d->tree_path = NULL;
+}
+
+/*
+ * For each URI in the selection, copy or move it to the target.
+ *
+ * RETURN: 0 if it was a copy, non-zero for a move.
+ */
+int
+handle_drop(GtkSelectionData *data, gint x, gint y, struct state *d)
+{
+	gchar	**uris;
+	char	*target;
+	GFile	*g_source;
+	int	 i, ret = 0;
+
+	if ((uris = gtk_selection_data_get_uris(data)) == NULL)
+		return ret;
+
+	for (i = 0; uris[i] != NULL; i++) {
+		g_source = g_file_new_for_uri(uris[i]);
+		target = determine_target(d, x, y);
+		ret = copy_or_move(g_source, target);
+
+		if (ret < 0)
+			warnx("failed to copy/move to %s: %i",
+			    target, ret);
+
+		free(target);
+		g_object_unref(g_source);
+	}
+
+	g_strfreev(uris);
+
+	return ret;
 }
 
 /*
