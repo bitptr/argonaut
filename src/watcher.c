@@ -25,7 +25,7 @@ struct thread_data {
 };
 
 gpointer			 watch_dir_func(gpointer);
-gboolean			 repopulate(gpointer);
+gboolean			 thr_repopulate(gpointer);
 static struct thread_data	*thread_data_new(GtkListStore *, char *);
 static void			 thread_data_free(struct thread_data *);
 
@@ -81,7 +81,7 @@ watch_dir_func(gpointer data)
 		if (ret == 0)
 			break;
 
-		g_idle_add(repopulate, data);
+		g_idle_add(thr_repopulate, data);
 	}
 
 	thread_data_free(data);
@@ -99,7 +99,7 @@ watch_dir_func(gpointer data)
  * RETURN: False, to indicate that the function should be run only once.
  */
 gboolean
-repopulate(gpointer data)
+thr_repopulate(gpointer data)
 {
 	GtkListStore		*model;
 	char			*dir;

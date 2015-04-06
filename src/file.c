@@ -15,9 +15,9 @@ activate(GtkIconView *iconview, GtkTreePath *path, struct state *d)
 	GtkTreeIter	 iter;
 	gint		 type;
 	GError		*error;
-	
+
 	error = NULL;
-        
+
 	if ((model = gtk_icon_view_get_model(iconview)) == NULL)
 		errx(66, "could not find the model for the icon view");
 

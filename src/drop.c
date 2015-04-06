@@ -14,8 +14,9 @@
 #include <gio/gio.h>
 
 #include "compat.h"
-#include "dnd.h"
+#include "drop.h"
 #include "state.h"
+#include "store.h"
 #include "extern.h"
 
 static char	*determine_target(struct state *, gint, gint);
@@ -36,6 +37,7 @@ on_icons_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x,
 
 	should_delete = (data != NULL) ?  handle_drop(data, x, y, d) : 0;
 	gtk_drag_finish(context, TRUE, should_delete, time);
+	repopulate(d);
 }
 
 /*

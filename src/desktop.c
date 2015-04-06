@@ -15,6 +15,8 @@
 #include "callbacks.h"
 #include "compat.h"
 #include "dnd.h"
+#include "drag.h"
+#include "drop.h"
 #include "extern.h"
 #include "pathnames.h"
 #include "state.h"
@@ -207,14 +209,27 @@ set_up_icon_view(GtkWidget *icons, struct state *d)
 	gtk_icon_view_set_text_column(d->icon_view, FILE_NAME);
 	gtk_icon_view_set_pixbuf_column(d->icon_view, FILE_ICON);
 
-	gtk_drag_dest_set(icons, GTK_DEST_DEFAULT_ALL, NULL, 0,
-	    GDK_ACTION_COPY);
+	/* Drag */
+	gtk_drag_source_set(icons, GDK_BUTTON1_MASK,
+	    dnd_targets, TARGET_COUNT,
+	    GDK_ACTION_COPY | GDK_ACTION_MOVE);
+	gtk_drag_source_add_text_targets(icons);
+	gtk_drag_source_add_uri_targets(icons);
+	g_signal_connect(icons, "drag-begin", G_CALLBACK(on_icons_drag_begin), d);
+	g_signal_connect(icons, "drag-data-get", G_CALLBACK(on_icons_drag_data_get), d);
+	g_signal_connect(icons, "drag-end", G_CALLBACK(on_icons_drag_end), d);
+
+	/* Drop */
+	gtk_drag_dest_set(icons, GTK_DEST_DEFAULT_ALL,
+	    dnd_targets, TARGET_COUNT,
+	    GDK_ACTION_COPY | GDK_ACTION_MOVE);
 	gtk_drag_dest_add_text_targets(icons);
 	gtk_drag_dest_add_uri_targets(icons);
-
 	g_signal_connect(icons, "drag-motion", G_CALLBACK(on_icons_drag_motion), d);
 	g_signal_connect(icons, "drag-leave", G_CALLBACK(on_icons_data_leave), d);
 	g_signal_connect(icons, "drag-data-received", G_CALLBACK(on_icons_drag_data_received), d);
+
+	/* Activations */
 	g_signal_connect(icons, "item-activated", G_CALLBACK(on_icons_item_activated), d);
 	g_signal_connect(icons, "button-press-event", G_CALLBACK(on_desktop_icon_button_press_event), d);
 }

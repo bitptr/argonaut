@@ -3,11 +3,13 @@
 #endif
 
 #include <dirent.h>
+#include <err.h>
 
 #include <gtk/gtk.h>
 
 #include "extern.h"
 #include "thumbnail.h"
+#include "store.h"
 
 static void	store_insert(GtkListStore *, struct dirent *, char *);
 
@@ -29,6 +31,23 @@ populate(GtkListStore *model, char *directory)
 	}
 
 	return -1;
+}
+
+/*
+ * Add each file in the directory in the state into the model for the icon view
+ * in the state.
+ */
+void
+repopulate(struct state *d)
+{
+	GtkTreeModel	*model;
+
+	if ((model = gtk_icon_view_get_model(d->icon_view)) == NULL)
+		errx(66, "could not find the model for the icon view");
+
+	gtk_list_store_clear(GTK_LIST_STORE(model));
+	if (populate(GTK_LIST_STORE(model), d->dir) == -1)
+		errx(66, "failed to populate icon model from %s", d->dir);
 }
 
 /*

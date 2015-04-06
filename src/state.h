@@ -8,6 +8,7 @@ struct state {
 	char		*dir;		/* The directory */
 	GtkIconView	*icon_view;	/* The grid of icons */
 	GtkTreePath	*tree_path;	/* The tree path to the drop target */
+	char		**selected_uris;/* The URIs of selected items */
 };
 
 struct state	*state_new(char *);

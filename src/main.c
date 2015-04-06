@@ -22,6 +22,8 @@
 #include "compat.h"
 #include "callbacks.h"
 #include "dnd.h"
+#include "drag.h"
+#include "drop.h"
 #include "extern.h"
 #include "file.h"
 #include "main.h"
@@ -187,9 +189,6 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	GtkBuilder	*builder;
 	GtkWidget	*icons, *window, *directory_close, *file_open;
 	GtkListStore	*model;
-	GtkTargetEntry	drag_targets[] = {
-		{ "text/uri-list", 0, TARGET_URI_LIST }
-	};
 
 	builder = gtk_builder_new_from_file(INTERFACE_PATH);
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
@@ -217,15 +216,28 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(icons), 1);
 	gtk_icon_view_set_model(GTK_ICON_VIEW(icons), GTK_TREE_MODEL(model));
 	g_object_unref(model);
+
+	/* Drag */
+	gtk_drag_source_set(icons, GDK_BUTTON1_MASK,
+	    dnd_targets, TARGET_COUNT,
+	    GDK_ACTION_COPY | GDK_ACTION_MOVE);
+	gtk_drag_source_add_text_targets(icons);
+	gtk_drag_source_add_uri_targets(icons);
+	g_signal_connect(icons, "drag-begin", G_CALLBACK(on_icons_drag_begin), d);
+	g_signal_connect(icons, "drag-data-get", G_CALLBACK(on_icons_drag_data_get), d);
+	g_signal_connect(icons, "drag-end", G_CALLBACK(on_icons_drag_end), d);
+
+	/* Drop */
 	gtk_drag_dest_set(icons, GTK_DEST_DEFAULT_ALL,
-	    drag_targets, TARGET_COUNT,
-	    GDK_ACTION_COPY);
+	    dnd_targets, TARGET_COUNT,
+	    GDK_ACTION_COPY | GDK_ACTION_MOVE);
 	gtk_drag_dest_add_text_targets(icons);
 	gtk_drag_dest_add_uri_targets(icons);
-
 	g_signal_connect(icons, "drag-motion", G_CALLBACK(on_icons_drag_motion), d);
 	g_signal_connect(icons, "drag-leave", G_CALLBACK(on_icons_data_leave), d);
 	g_signal_connect(icons, "drag-data-received", G_CALLBACK(on_icons_drag_data_received), d);
+
+	/* Activations */
 	g_signal_connect(icons, "item-activated", G_CALLBACK(on_icons_item_activated), d);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect(window, "configure-event", G_CALLBACK(on_window_configure_event), dir);
