@@ -188,13 +188,14 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 {
 	GtkBuilder	*builder;
 	GtkWidget	*icons, *window, *directory_close, *file_open;
-	GtkWidget	*directory_up;
+	GtkWidget	*directory_up, *directory_open;
 	GtkListStore	*model;
 
 	builder = gtk_builder_new_from_file(INTERFACE_PATH);
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
 	icons = GTK_WIDGET(gtk_builder_get_object(builder, "icons"));
 	directory_up = GTK_WIDGET(gtk_builder_get_object(builder, "directory-up-menu-item"));
+	directory_open = GTK_WIDGET(gtk_builder_get_object(builder, "directory-open-menu-item"));
 	directory_close = GTK_WIDGET(gtk_builder_get_object(builder, "directory-close-menu-item"));
 	file_open = GTK_WIDGET(gtk_builder_get_object(builder, "file-open-menu-item"));
 
@@ -246,6 +247,7 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect(window, "configure-event", G_CALLBACK(on_window_configure_event), dir);
 	g_signal_connect(directory_up, "activate", G_CALLBACK(on_directory_up_menu_item_activate), d);
+	g_signal_connect(directory_open, "activate", G_CALLBACK(on_directory_open_menu_item_activate), d);
 	g_signal_connect(directory_close, "activate", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect(file_open, "activate", G_CALLBACK(on_file_open_menu_item_activate), d);
 	g_signal_connect(icons, "button-press-event", G_CALLBACK(on_icons_button_press_event), d);

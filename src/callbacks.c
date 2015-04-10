@@ -2,6 +2,8 @@
 #include <config.h>
 #endif
 
+#include <sys/stat.h>
+
 #include <dirent.h>
 #include <db.h>
 #include <err.h>
@@ -20,6 +22,8 @@
 
 static gboolean	on_middle_click(GtkWidget *, GdkEvent *, gpointer);
 static void activate_path(gpointer, gpointer);
+static GtkWidget *build_path_dialog(GtkWidget *, GtkWidget *);
+static void open_path(struct state *, const char *);
 
 /*
  * Open the file using guesses from XDG.
@@ -59,6 +63,93 @@ on_directory_up_menu_item_activate(GtkMenuItem *menuitem, gpointer user_data)
 	open_directory(d, parent);
 done:
 	free(cwd);
+}
+
+/*
+ * Prompt the user for an arbitrary path and then open it.
+ */
+void
+on_directory_open_menu_item_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	struct state	*d;
+	GtkWidget	*dialog, *path_entry;
+	const char	*path;
+
+	d = (struct state *)user_data;
+
+	path_entry = gtk_entry_new();
+	dialog = build_path_dialog(GTK_WIDGET(menuitem), path_entry);
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+		path = gtk_entry_get_text(GTK_ENTRY(path_entry));
+		open_path(d, path);
+	}
+
+	gtk_widget_destroy(dialog);
+}
+
+/*
+ * Construct the dialog prompting for an arbitrary file path.
+ */
+GtkWidget *
+build_path_dialog(GtkWidget *widget, GtkWidget *entry)
+{
+	GtkWidget	*dialog, *content_area, *label, *parent;
+
+	parent = gtk_widget_get_toplevel(widget);
+
+	dialog = gtk_dialog_new_with_buttons(
+	    "Open path", GTK_WINDOW(parent), 0,
+	    "_Close",
+	    GTK_RESPONSE_CLOSE,
+	    "_Open",
+	    GTK_RESPONSE_OK,
+	    NULL);
+
+	content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+	gtk_box_set_spacing(GTK_BOX(content_area), 6);
+
+	label = gtk_label_new_with_mnemonic("_Path");
+	gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry);
+	gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_OK);
+	gtk_entry_set_activates_default(GTK_ENTRY(entry), 1);
+
+	gtk_container_add(GTK_CONTAINER(content_area), label);
+	gtk_container_add(GTK_CONTAINER(content_area), entry);
+
+	gtk_widget_show_all(content_area);
+
+	return dialog;
+}
+
+/*
+ * Open an arbitrary path.
+ */
+void
+open_path(struct state *d, const char *path)
+{
+	gchar		*fullpath;
+	GdkScreen	*screen;
+	GError		*error;
+	struct stat	 sb;
+
+	fullpath = g_strdup_printf("file://%s", path);
+
+	if (stat(path, &sb) < 0) {
+		warn("stat");
+		return;
+	}
+
+	if (S_ISDIR(sb.st_mode))
+		open_directory(d, fullpath);
+	else {
+		screen = gdk_screen_get_default();
+		gtk_show_uri(screen, fullpath, GDK_CURRENT_TIME, &error);
+		if (error)
+			warnx("gtk_show_uri: %s", error->message);
+	}
 }
 
 /*
