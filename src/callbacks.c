@@ -5,7 +5,9 @@
 #include <dirent.h>
 #include <db.h>
 #include <err.h>
+#include <libgen.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <gtk/gtk.h>
 
@@ -26,6 +28,37 @@ void
 on_icons_item_activated(GtkIconView *iconview, GtkTreePath *path, struct state *user_data)
 {
 	activate(iconview, path, user_data);
+}
+
+/*
+ * Open the parent directory.
+ */
+void
+on_directory_up_menu_item_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	struct state	*d;
+	char		*parent, *cwd;
+	size_t		 len;
+
+	d = (struct state *)user_data;
+	len = strlen(d->dir);
+
+	if (len < 2)
+		return;
+
+	if ((cwd = calloc(len + 1, sizeof(char))) == NULL)
+		err(1, "calloc");
+
+	strlcpy(cwd, d->dir, len + 1);
+
+	if ((parent = dirname(cwd)) == NULL) {
+		warn("dirname");
+		goto done;
+	}
+
+	open_directory(d, parent);
+done:
+	free(cwd);
 }
 
 /*
