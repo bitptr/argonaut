@@ -124,6 +124,27 @@ build_path_dialog(GtkWidget *widget, GtkWidget *entry)
 	return dialog;
 }
 
+void
+on_help_about_menu_item_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	GtkWidget	*parent;
+	char		*authors[] = { "Mike Burns", "Matt Horan", NULL };
+
+	parent = gtk_widget_get_toplevel(GTK_WIDGET(menuitem));
+
+	gtk_show_about_dialog(
+	    GTK_WINDOW(parent),
+	    "program-name", "argonaut",
+	    "version", PACKAGE_VERSION,
+	    "copyright", "Copyright 2014, 2015 bitptr",
+	    "comments", "Graphical, spatial directory navigator",
+	    "website", "https://bitptr.org/tools/argonaut",
+	    "website_label", "Web site",
+	    "license_type", GTK_LICENSE_BSD,
+	    "authors", authors,
+	    NULL);
+}
+
 /*
  * Open an arbitrary path.
  */
