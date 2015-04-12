@@ -11,6 +11,7 @@ void		on_file_open_menu_item_activate(GtkMenuItem *, gpointer);
 void		on_directory_up_menu_item_activate(GtkMenuItem *, gpointer);
 void		on_directory_open_menu_item_activate(GtkMenuItem *, gpointer);
 void		on_help_about_menu_item_activate(GtkMenuItem *, gpointer);
+void		on_window_destroy(GtkWidget *, gpointer);
 gboolean	on_window_configure_event(GtkWidget *, GdkEvent  *, char *);
 gboolean	on_icons_button_press_event(GtkWidget *, GdkEvent *, gpointer);
 gboolean	on_desktop_icon_button_press_event(GtkWidget *, GdkEvent *, gpointer);

@@ -37,6 +37,7 @@
 #include "thumbnail.h"
 
 extern int errno;
+extern volatile sig_atomic_t exit_flag;
 
 static GtkWidget	*prepare_window(char *, struct geometry *, struct state *);
 __dead void	 	 usage();
@@ -62,6 +63,7 @@ main(int argc, char *argv[])
 	const char	*errstr;
 
 	parent_pid = 0;
+	exit_flag = 0;
 
 	if ((d = state_new(argv[0])) == NULL)
 		err(1, "could not build the callback data");
@@ -94,7 +96,6 @@ main(int argc, char *argv[])
 		state_add_known_pid(d, parent_pid);
 	if (signal(SIGCHLD, chld_handler) == SIG_ERR)
 		err(1, "signal");
-	g_idle_add(chld_notifier, d);
 
 	if ((geometry = malloc(sizeof(struct geometry))) == NULL)
 		err(1, "malloc");
@@ -103,10 +104,16 @@ main(int argc, char *argv[])
 	free(geometry);
 
 	gtk_widget_show(window);
-	gtk_main();
+
+	while (!exit_flag)
+		gtk_main_iteration();
 
 done:
 	state_free(d);
+
+	if (parent_pid > 1)
+		if (kill(parent_pid, SIGCHLD) != 0)
+			warn("kill");
 
 	return 0;
 }
@@ -264,11 +271,11 @@ prepare_window(char *dir, struct geometry *geometry, struct state *d)
 
 	/* Activations */
 	g_signal_connect(icons, "item-activated", G_CALLBACK(on_icons_item_activated), d);
-	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(window, "destroy", G_CALLBACK(on_window_destroy), NULL);
 	g_signal_connect(window, "configure-event", G_CALLBACK(on_window_configure_event), dir);
 	g_signal_connect(directory_up, "activate", G_CALLBACK(on_directory_up_menu_item_activate), d);
 	g_signal_connect(directory_open, "activate", G_CALLBACK(on_directory_open_menu_item_activate), d);
-	g_signal_connect(directory_close, "activate", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(directory_close, "activate", G_CALLBACK(on_window_destroy), NULL);
 	g_signal_connect(file_open, "activate", G_CALLBACK(on_file_open_menu_item_activate), d);
 	g_signal_connect(help_about, "activate", G_CALLBACK(on_help_about_menu_item_activate), NULL);
 	g_signal_connect(icons, "button-press-event", G_CALLBACK(on_icons_button_press_event), d);

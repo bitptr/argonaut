@@ -15,6 +15,7 @@
 
 #include "compat.h"
 #include "drop.h"
+#include "directory.h"
 #include "state.h"
 #include "store.h"
 #include "extern.h"
@@ -24,6 +25,12 @@ static int	 copy_or_move(GFile *, char *);
 static int	 find_mountpoint(GFile *);
 static int	 copy_file(GFile *, GFile *, char *);
 static int	 handle_drop(GtkSelectionData *, gint, gint, struct state *);
+static gboolean	 jump_dir(gpointer);
+
+struct jump_state {
+	struct state	*state;
+	char		*dir_name;
+};
 
 /*
  * Called when the source program sends the data to us. This data must include
@@ -50,9 +57,12 @@ gboolean
 on_icons_drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
     guint time, struct state *d)
 {
-	GtkTreeModel	*model;
-	GtkTreeIter	 iter;
-	gint	 	 type;
+	GtkTreeModel		*model;
+	GtkTreeIter		 iter;
+	gint	 		 type;
+	struct jump_state	*j;
+	char			*name;
+	int			 len;
 
 	model = gtk_icon_view_get_model(d->icon_view);
 
@@ -62,11 +72,25 @@ on_icons_drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 	if (gtk_icon_view_get_dest_item_at_pos(d->icon_view, x, y,
 		    &d->tree_path, NULL)) {
 		if (gtk_tree_model_get_iter(model, &iter, d->tree_path)) {
-			gtk_tree_model_get(model, &iter, FILE_TYPE, &type, -1);
+			gtk_tree_model_get(model, &iter,
+			    FILE_NAME, &name,
+			    FILE_TYPE, &type,
+			    -1);
 			if (type == DT_DIR) {
 				gtk_icon_view_select_path(d->icon_view,
 				    d->tree_path);
 				gtk_drag_unhighlight(widget);
+
+				if ((j = malloc(sizeof(struct jump_state))) == NULL)
+					err(1, "malloc");
+				len = strlen(name);
+fprintf(stderr, "name = %s\n", name);
+				if ((j->dir_name = calloc(len + 1, sizeof(char))) == NULL)
+				    err(1, "calloc");
+				strlcpy(j->dir_name, name, len+1);
+fprintf(stderr, "j->dir_name = %s\n", j->dir_name);
+				j->state = d;
+				g_timeout_add_seconds(2, jump_dir, j);
 			} else
 				gtk_drag_highlight(widget);
 		}
@@ -75,6 +99,18 @@ on_icons_drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 
 	gdk_drag_status(context, GDK_ACTION_COPY, time);
 	return TRUE;
+}
+
+gboolean
+jump_dir(gpointer user_data)
+{
+	struct jump_state *j;
+	j = (struct jump_state *)user_data;
+fprintf(stderr, "j->dir_name = %s\n", j->dir_name);
+	open_directory(j->state, j->dir_name);
+	free(j->dir_name);
+	free(j);
+	return 0;
 }
 
 /*
@@ -86,6 +122,7 @@ void
 on_icons_data_leave(GtkWidget *widget, GdkDragContext *context, guint time,
     struct state *d)
 {
+fprintf(stderr, "on_icons_data_leave\n");
 	if (d->tree_path != NULL)
 		gtk_icon_view_unselect_path(d->icon_view, d->tree_path);
 	gtk_drag_unhighlight(widget);

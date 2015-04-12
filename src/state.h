@@ -10,6 +10,7 @@ struct state {
 	GtkTreePath	*tree_path;	/* The tree path to the drop target */
 	char		**selected_uris;/* The URIs of selected items */
 	pid_t		 pid;		/* A PID to notify */
+	int		 in_drag;	/* Are we in the middle of a drag */
 };
 
 struct state	*state_new(char *);

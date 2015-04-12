@@ -42,6 +42,7 @@ state_new(char *argv0)
 	d->tree_path = NULL;
 	d->dir = NULL;
 	d->pid = 0;
+	d->in_drag = 0;
 
 	return d;
 }

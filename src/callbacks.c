@@ -18,6 +18,7 @@
 #include "main.h"
 #include "window.h"
 #include "state.h"
+#include "signals.h"
 #include "file.h"
 
 static gboolean	on_middle_click(GtkWidget *, GdkEvent *, gpointer);
@@ -145,6 +146,12 @@ on_help_about_menu_item_activate(GtkMenuItem *menuitem, gpointer user_data)
 	    NULL);
 }
 
+void
+on_window_destroy(GtkWidget *object, gpointer user_data)
+{
+	exit_flag = 1;
+}
+
 /*
  * Open an arbitrary path.
  */
@@ -255,7 +262,7 @@ gboolean
 on_icons_button_press_event(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
 	if (on_middle_click(widget, event, user_data))
-		gtk_main_quit();
+		exit_flag = 1;
 	return FALSE;
 }
 

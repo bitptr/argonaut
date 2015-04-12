@@ -28,6 +28,8 @@ on_icons_drag_begin(GtkWidget *widget, GdkDragContext *context,
 	d = (struct state *)user_data;
 	acc = NULL;
 
+	d->in_drag = 1;
+
 	selecteds = gtk_icon_view_get_selected_items(d->icon_view);
 	len = g_list_length(selecteds);
 
@@ -63,6 +65,7 @@ on_icons_drag_end(GtkWidget *widget, GdkDragContext *context,
 	int		 i;
 
 	d = (struct state *)user_data;
+	d->in_drag = 0;
 	for (i = 0; d->selected_uris[i] != NULL; i++)
 		free(d->selected_uris[i]);
 	free(d->selected_uris);
