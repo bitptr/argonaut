@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 
 #include "store.h"
+#include "signals.h"
 
 struct thread_data {
 	GtkListStore	*model;
@@ -68,9 +69,14 @@ watch_dir_func(gpointer data)
 		err(1, "kqueue");
 
 	EV_SET(&kev, fd, EVFILT_VNODE, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
-
 	if (kevent(kq, &kev, 1, NULL, 0, NULL) == -1)
 		err(1, "kevent");
+
+	EV_SET(&kev, SIGCHLD, EVFILT_SIGNAL, EV_ADD, 0, 0, NULL);
+	if (kevent(kq, &kev, 1, NULL, 0, NULL) == -1)
+		err(1, "kevent");
+	if (signal(SIGCHLD, SIG_IGN) == SIG_ERR)
+		err(1, "signal");
 
 	for (;;) {
 		ret = kevent(kq, NULL, 0, &kev, 1, NULL);
@@ -81,7 +87,14 @@ watch_dir_func(gpointer data)
 		if (ret == 0)
 			break;
 
-		g_idle_add(thr_repopulate, data);
+		switch (kev.filter) {
+		case EVFILT_VNODE:
+			g_idle_add(thr_repopulate, data);
+			break;
+		case EVFILT_SIGNAL:
+			chld_handler(kev.ident);
+			break;
+		}
 	}
 
 	thread_data_free(data);

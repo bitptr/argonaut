@@ -9,10 +9,12 @@ struct state {
 	GtkIconView	*icon_view;	/* The grid of icons */
 	GtkTreePath	*tree_path;	/* The tree path to the drop target */
 	char		**selected_uris;/* The URIs of selected items */
+	pid_t		 pid;		/* A PID to notify */
 };
 
 struct state	*state_new(char *);
 void		 state_free(struct state *);
 int		 state_add_dir(struct state *, char *);
+void		 state_add_known_pid(struct state *, pid_t);
 
 #endif /* STATE_H */

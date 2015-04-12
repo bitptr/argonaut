@@ -41,6 +41,7 @@ state_new(char *argv0)
 	d->icon_view = NULL;
 	d->tree_path = NULL;
 	d->dir = NULL;
+	d->pid = 0;
 
 	return d;
 }
@@ -58,6 +59,12 @@ state_add_dir(struct state *d, char *dir)
 		return -2;
 
 	return 0;
+}
+
+void
+state_add_known_pid(struct state *d, pid_t pid)
+{
+	d->pid = pid;
 }
 
 /*

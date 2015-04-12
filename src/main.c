@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -30,6 +31,7 @@
 #include "pathnames.h"
 #include "window.h"
 #include "watcher.h"
+#include "signals.h"
 #include "state.h"
 #include "store.h"
 #include "thumbnail.h"
@@ -40,6 +42,8 @@ static GtkWidget	*prepare_window(char *, struct geometry *, struct state *);
 __dead void	 	 usage();
 static char		*getdir(int, char **);
 static void		 getgeometry(char *dir, struct geometry *);
+void			 chld_handler(int);
+gboolean chld_notifier(gpointer);
 
 /*
  * A spatial file manager. Treat directories as independent resources with
@@ -54,14 +58,23 @@ main(int argc, char *argv[])
 	WnckWindow	*w;
         struct state	*d;
 	char		*dir, ch;
+	pid_t		 parent_pid;
+	const char	*errstr;
+
+	parent_pid = 0;
 
 	if ((d = state_new(argv[0])) == NULL)
 		err(1, "could not build the callback data");
 
 	gtk_init(&argc, &argv);
 
-	while ((ch = getopt(argc, argv, "")) != -1)
+	while ((ch = getopt(argc, argv, "9:")) != -1)
 		switch (ch) {
+		case '9':
+			parent_pid = (pid_t)strtonum(optarg, 2, LLONG_MAX, &errstr);
+			if (errstr != NULL)
+				err(1, "strtonum: %s", errstr);
+			break;
 		default:
 			usage();
 			/* NOTREACHED */
@@ -76,6 +89,12 @@ main(int argc, char *argv[])
 
 	if (state_add_dir(d, dir) < 0)
 		err(1, "state_add_dir");
+
+	if (parent_pid > 0)
+		state_add_known_pid(d, parent_pid);
+	if (signal(SIGCHLD, chld_handler) == SIG_ERR)
+		err(1, "signal");
+	g_idle_add(chld_notifier, d);
 
 	if ((geometry = malloc(sizeof(struct geometry))) == NULL)
 		err(1, "malloc");
