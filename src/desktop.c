@@ -23,7 +23,7 @@
 #include "store.h"
 #include "watcher.h"
 
-static void	 set_window_gemetry(GtkWindow *);
+static void	 set_window_geometry(GtkWindow *, GtkWidget *);
 static void	 desktopize(GtkWidget *);
 static void	 skip_pager(GtkWidget *);
 static char	*get_dir();
@@ -35,7 +35,8 @@ static void	 set_up_icon_view(GtkWidget *, struct state *);
  * A desktop file manager. This opens files and directories the same way that
  * argonaut(1) does.
  */
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	GtkBuilder	*builder;
 	GtkWidget	*root, *icons;
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 	root = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name(root, "argonaut-desktop");
 
-	set_window_gemetry(GTK_WINDOW(root));
+	set_window_geometry(GTK_WINDOW(root), GTK_WIDGET(icons));
 	desktopize(root);
 	skip_pager(root);
 	populate_model(dir, d->icon_view);
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
  * that.
  */
 static void
-set_window_gemetry(GtkWindow *window)
+set_window_geometry(GtkWindow *window, GtkWidget *widget)
 {
 	GdkScreen	*screen;
 	GdkRectangle	 rect;
@@ -94,6 +95,7 @@ set_window_gemetry(GtkWindow *window)
 	gdk_screen_get_monitor_workarea(screen, 0, &rect);
 
 	gtk_window_set_default_size(window, rect.width, rect.height);
+	gtk_widget_set_size_request(widget, rect.width, rect.height);
 	gtk_window_move(window, rect.x, rect.y);
 }
 
