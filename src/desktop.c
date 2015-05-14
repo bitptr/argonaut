@@ -30,6 +30,7 @@ static char	*get_dir();
 static void	 populate_model(char *, GtkIconView *);
 GtkListStore	*populated_model(char *);
 static void	 set_up_icon_view(GtkWidget *, struct state *);
+static void	 override_background_color(GtkWidget *, GdkRGBA *);
 
 /*
  * A desktop file manager. This opens files and directories the same way that
@@ -205,9 +206,11 @@ populated_model(char *dir)
 static void
 set_up_icon_view(GtkWidget *icons, struct state *d)
 {
+	/* Background color */
 	GdkRGBA	transparent = {0, 0, 0, 0};
+	override_background_color(icons, &transparent);
 
-        gtk_widget_override_background_color(icons, 0, &transparent);
+	/* Columns */
 	gtk_icon_view_set_text_column(d->icon_view, FILE_NAME);
 	gtk_icon_view_set_pixbuf_column(d->icon_view, FILE_ICON);
 
@@ -234,4 +237,24 @@ set_up_icon_view(GtkWidget *icons, struct state *d)
 	/* Activations */
 	g_signal_connect(icons, "item-activated", G_CALLBACK(on_icons_item_activated), d);
 	g_signal_connect(icons, "button-press-event", G_CALLBACK(on_desktop_icon_button_press_event), d);
+}
+
+static void
+override_background_color(GtkWidget *widget, GdkRGBA *rgba)
+{
+	gchar          *css;
+	GtkCssProvider *provider;
+
+	provider = gtk_css_provider_new();
+
+	css = g_strdup_printf("* { background-color: %s; }",
+	    gdk_rgba_to_string(rgba));
+	gtk_css_provider_load_from_data(provider, css, -1, NULL);
+	g_free(css);
+
+	gtk_style_context_add_provider(
+	    gtk_widget_get_style_context(widget),
+	    GTK_STYLE_PROVIDER(provider),
+	    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	g_object_unref(provider);
 }
