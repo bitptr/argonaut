@@ -1,5 +1,5 @@
 AM_CPPFLAGS = -DBINDIR=\"$(bindir)\" -DPKGDATADIR=\"$(pkgdatadir)\" -DWNCK_I_KNOW_THIS_IS_UNSTABLE
-AM_CFLAGS = -Wall -Wextra -pedantic-errors -Wno-unused-parameter -Werror -DGSEAL_ENABLE
+AM_CFLAGS = -std=c99 -Wall -Wextra -pedantic-errors -Wno-unused-parameter -Werror -DGSEAL_ENABLE
 bin_PROGRAMS = argonaut argonaut-desktop
 
 dist_argonaut_SOURCES = main.c main.h callbacks.c callbacks.h \
